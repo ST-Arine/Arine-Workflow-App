@@ -29,10 +29,9 @@ export function PrimaryButton({ children, onClick, disabled, icon: IconC }) {
       style={{
         background: disabled ? "rgba(255,255,255,0.12)" : "linear-gradient(135deg, #FF5DA2, #FF9A4D)",
         color: disabled ? C.inkFaint : "#1B0F2E", ...sans, fontWeight: 700,
-        transform: hover && !disabled ? "translateY(-1px) scale(1.02)" : "translateY(0) scale(1)",
         boxShadow: hover && !disabled ? "0 10px 28px -10px rgba(255,93,162,0.55)" : "0 6px 18px -10px rgba(255,93,162,0.4)",
       }}
-      className="px-6 py-3 rounded-full text-sm inline-flex items-center gap-2 disabled:cursor-not-allowed">
+      className="btn-lift px-6 py-3 rounded-full text-sm inline-flex items-center gap-2 disabled:cursor-not-allowed">
       {IconC && <IconC size={16} />}{children}
     </button>
   );
@@ -42,8 +41,8 @@ export function GhostButton({ children, onClick, tone = "default", disabled = fa
   const base = tone === "danger" ? C.danger : "#FFFFFF";
   return (
     <button onClick={onClick} disabled={disabled} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      style={{ color: disabled ? C.inkFaint : base, borderColor: hover && !disabled ? base : C.border, background: hover && !disabled ? (tone === "danger" ? C.dangerSoft : "rgba(255,255,255,0.12)") : "rgba(255,255,255,0.04)", ...sans, fontWeight: 600 }}
-      className={`${large ? "px-6 py-[11px]" : "px-4 py-2"} rounded-full text-sm border inline-flex items-center gap-1.5 disabled:cursor-not-allowed`}>
+      style={{ color: disabled ? C.inkFaint : base, borderColor: hover && !disabled ? base : C.border, background: hover && !disabled ? (tone === "danger" ? C.dangerSoft : "rgba(255,255,255,0.12)") : "rgba(255,255,255,0.04)", boxShadow: large && hover && !disabled ? "0 10px 28px -10px rgba(255,255,255,0.3)" : "none", ...sans, fontWeight: 600 }}
+      className={`${large ? "btn-lift px-6 py-[11px]" : "px-4 py-2"} rounded-full text-sm border inline-flex items-center gap-1.5 disabled:cursor-not-allowed`}>
       {children}
     </button>
   );
