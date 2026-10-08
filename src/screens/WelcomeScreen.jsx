@@ -14,7 +14,7 @@ export function WelcomeScreen({ completedCount, onFind, onBreak }) {
         {returning ? `${completedCount} down today. Keep going, or grab a breather?` : "Let's find your next call."}
       </p>
       <div className="flex items-center flex-wrap gap-3">
-        <PrimaryButton onClick={onFind} icon={ChevronRight}>Find my next call</PrimaryButton>
+        <PrimaryButton onClick={onFind} icon={ChevronRight} iconRight>Find my next call</PrimaryButton>
         <GhostButton large onClick={onBreak}>Take a Break</GhostButton>
       </div>
     </div>

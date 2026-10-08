@@ -22,7 +22,7 @@ export function Panel({ children, style, className = "", elevated = false }) {
     </div>
   );
 }
-export function PrimaryButton({ children, onClick, disabled, icon: IconC }) {
+export function PrimaryButton({ children, onClick, disabled, icon: IconC, iconRight = false }) {
   const [hover, setHover] = useState(false);
   return (
     <button onClick={onClick} disabled={disabled} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
@@ -32,7 +32,7 @@ export function PrimaryButton({ children, onClick, disabled, icon: IconC }) {
         boxShadow: hover && !disabled ? "0 10px 28px -10px rgba(255,93,162,0.55)" : "0 6px 18px -10px rgba(255,93,162,0.4)",
       }}
       className="btn-lift px-6 py-3 rounded-full text-sm inline-flex items-center gap-2 disabled:cursor-not-allowed">
-      {IconC && <IconC size={16} />}{children}
+      {IconC && !iconRight && <IconC size={16} />}{children}{IconC && iconRight && <IconC size={16} />}
     </button>
   );
 }
