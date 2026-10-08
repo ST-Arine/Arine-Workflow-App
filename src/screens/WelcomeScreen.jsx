@@ -15,7 +15,7 @@ export function WelcomeScreen({ completedCount, onFind, onBreak }) {
       </p>
       <div className="flex items-center flex-wrap gap-3">
         <PrimaryButton onClick={onFind} icon={ChevronRight}>Find my next call</PrimaryButton>
-        <GhostButton onClick={onBreak}>Take a Break</GhostButton>
+        <GhostButton large onClick={onBreak}>Take a Break</GhostButton>
       </div>
     </div>
   );

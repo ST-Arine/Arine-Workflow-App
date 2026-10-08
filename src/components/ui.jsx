@@ -37,13 +37,13 @@ export function PrimaryButton({ children, onClick, disabled, icon: IconC }) {
     </button>
   );
 }
-export function GhostButton({ children, onClick, tone = "default", disabled = false }) {
+export function GhostButton({ children, onClick, tone = "default", disabled = false, large = false }) {
   const [hover, setHover] = useState(false);
   const base = tone === "danger" ? C.danger : "#FFFFFF";
   return (
     <button onClick={onClick} disabled={disabled} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{ color: disabled ? C.inkFaint : base, borderColor: hover && !disabled ? base : C.border, background: hover && !disabled ? (tone === "danger" ? C.dangerSoft : "rgba(255,255,255,0.12)") : "rgba(255,255,255,0.04)", ...sans, fontWeight: 600 }}
-      className="px-4 py-2 rounded-full text-sm border inline-flex items-center gap-1.5 disabled:cursor-not-allowed">
+      className={`${large ? "px-6 py-[11px]" : "px-4 py-2"} rounded-full text-sm border inline-flex items-center gap-1.5 disabled:cursor-not-allowed`}>
       {children}
     </button>
   );
