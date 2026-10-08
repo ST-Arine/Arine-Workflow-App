@@ -21,7 +21,7 @@ export const dropdownPanelStyle = {
 // Generic, reusable dropdown: measures the trigger's position on open and
 // flips left/right alignment automatically so the panel never runs off-screen,
 // regardless of where in the layout it's mounted.
-export function Dropdown({ trigger, panelWidth = 220, children }) {
+export function Dropdown({ trigger, panelWidth = 220, placement = "below", fullWidth = false, children }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
   const triggerRef = useRef(null);
@@ -32,6 +32,8 @@ export function Dropdown({ trigger, panelWidth = 220, children }) {
     if (!triggerRef.current) return { top: 0, left: 0 };
     const rect = triggerRef.current.getBoundingClientRect();
     const margin = 12;
+    // "side": open to the right of the trigger, growing upward (for triggers pinned to the bottom-left corner)
+    if (placement === "side") return { bottom: window.innerHeight - rect.bottom, left: rect.right + 8 };
     let left = rect.left;
     if (left + panelWidth > window.innerWidth - margin) left = rect.right - panelWidth;
     if (left < margin) left = margin;
@@ -45,12 +47,12 @@ export function Dropdown({ trigger, panelWidth = 220, children }) {
   }
 
   return (
-    <div ref={wrapperRef} style={{ display: "inline-block" }}>
-      <span ref={triggerRef} style={{ display: "inline-block" }}>
+    <div ref={wrapperRef} style={{ display: fullWidth ? "block" : "inline-block" }}>
+      <span ref={triggerRef} style={{ display: fullWidth ? "block" : "inline-block" }}>
         {trigger({ open, toggle })}
       </span>
       {open && pos && (
-        <div className="fade-in" style={{ ...dropdownPanelStyle, top: pos.top, left: pos.left, minWidth: panelWidth }} onClick={() => setOpen(false)}>
+        <div className="fade-in" style={{ ...dropdownPanelStyle, top: pos.top, bottom: pos.bottom, left: pos.left, minWidth: panelWidth }} onClick={() => setOpen(false)}>
           {children}
         </div>
       )}
@@ -102,18 +104,21 @@ export const STATUS_MAP = {
   break: { label: "On break", color: C.amber },
 };
 
-export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPreferences, onLogout, role, onToggleRole }) {
+export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPreferences, onLogout, role, onToggleRole, expanded = false }) {
   const [hover, setHover] = useState(false);
   const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   const s = STATUS_MAP[status];
   return (
     <Dropdown
       panelWidth={220}
+      placement="side"
+      fullWidth
       trigger={({ open, toggle }) => (
         <button
           onClick={toggle} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-          style={{ background: hover || open ? "rgba(255,255,255,0.1)" : "transparent", border: "none", padding: 4 }}
-          className="flex items-center rounded-full"
+          aria-label="Profile menu"
+          style={{ background: hover || open ? "rgba(255,255,255,0.1)" : "transparent", border: "none", padding: 8, ...sans }}
+          className={`flex items-center gap-3 w-full ${expanded ? "rounded-xl text-left" : "rounded-xl justify-center"}`}
         >
           <div style={{ position: "relative", width: 28, height: 28 }}>
             <div style={{ width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg, #FF5DA2, #8B7CF6)", color: "#1B0F2E", ...serif, fontWeight: 600 }} className="flex items-center justify-center text-xs">
@@ -136,6 +141,12 @@ export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPrefer
               />
             </span>
           </div>
+          {expanded && (
+            <span style={{ minWidth: 0 }} className="flex flex-col">
+              <span style={{ color: C.ink, whiteSpace: "nowrap" }} className="text-sm font-semibold">{name}</span>
+              <span style={{ color: s.color, whiteSpace: "nowrap" }} className="text-xs">{s.label}</span>
+            </span>
+          )}
         </button>
       )}
     >

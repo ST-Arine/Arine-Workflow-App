@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { C } from "./theme";
 import { ACCOUNTS, QUEUE, FOLLOWUP_RULES } from "./data/mock";
 import { TopBar } from "./components/TopBar";
 import { RecapTrail } from "./components/RecapTrail";
@@ -12,6 +11,10 @@ import { CallStep } from "./screens/CallStep";
 import { ReviewStep } from "./screens/ReviewStep";
 import { FaxStep } from "./screens/FaxStep";
 import { ManagerShell } from "./screens/Admin";
+import { AppShell } from "./components/SideNav";
+import { Phone } from "./components/icons";
+
+const CALLER_NAV = [{ id: "workflow", label: "My calls", icon: Phone }];
 
 export default function WorkflowAssistant() {
   const [role, setRole] = useState("caller"); // caller | manager
@@ -94,13 +97,21 @@ export default function WorkflowAssistant() {
     return <ManagerShell onToggleRole={toggleRole} />;
   }
 
-  return (
-    <div style={{ background: C.bg, minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+  const background = (
+    <>
       <div className="blob" style={{ position: "absolute", top: "-10%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "#FF5DA2", opacity: 0.35, filter: "blur(90px)", animation: "drift1 18s ease-in-out infinite" }} />
       <div className="blob" style={{ position: "absolute", top: "30%", left: "-15%", width: 460, height: 460, borderRadius: "50%", background: "#8B7CF6", opacity: 0.3, filter: "blur(90px)", animation: "drift2 22s ease-in-out infinite" }} />
       <div className="blob" style={{ position: "absolute", bottom: "-15%", right: "10%", width: 420, height: 420, borderRadius: "50%", background: "#36E2C8", opacity: 0.25, filter: "blur(90px)", animation: "drift3 20s ease-in-out infinite" }} />
-      <TopBar completedCount={completedCount} account={account} setAccount={setAccount} status={status} onGoBreak={goOnBreak} onBackFromBreak={backFromBreak} role={role} onToggleRole={toggleRole} />
-      <div className={`relative mx-auto px-4 sm:px-8 pb-10 ${wide ? "max-w-5xl" : "max-w-xl"}`} style={{ paddingTop: 88 }}>
+    </>
+  );
+
+  return (
+    <AppShell
+      navItems={CALLER_NAV} activeId="workflow" onSelect={() => {}} background={background}
+      profileProps={{ name: "Dana R.", status, onGoBreak: goOnBreak, onBackFromBreak: backFromBreak, role, onToggleRole: toggleRole }}
+    >
+      <TopBar completedCount={completedCount} account={account} setAccount={setAccount} />
+      <div className={`relative mx-auto px-4 sm:px-8 pb-10 ${wide ? "max-w-5xl" : "max-w-xl"}`} style={{ paddingTop: 24 }}>
         <RecapTrail items={recap} />
 
         {phase === "welcome" && <WelcomeScreen completedCount={completedCount} onFind={startSearch} onBreak={goOnBreak} />}
@@ -112,6 +123,6 @@ export default function WorkflowAssistant() {
         {phase === "review" && <ReviewStep engagement={engagement} agenda={agenda} followUps={followUps} setFollowUps={setFollowUps} onBack={() => setPhase("call")} onProceed={proceedToFax} />}
         {phase === "fax" && <FaxStep followUps={followUps} setFollowUps={setFollowUps} onFinish={finishEngagement} />}
       </div>
-    </div>
+    </AppShell>
   );
 }
