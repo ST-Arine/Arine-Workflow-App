@@ -1,5 +1,5 @@
 import { C, serif, sans } from "../theme";
-import { Coffee, ChevronRight } from "../components/icons";
+import { ChevronRight } from "../components/icons";
 import { PrimaryButton, GhostButton } from "../components/ui";
 
 // ---------- WELCOME ----------
@@ -15,7 +15,7 @@ export function WelcomeScreen({ completedCount, onFind, onBreak }) {
       </p>
       <div className="flex items-center flex-wrap gap-3">
         <PrimaryButton onClick={onFind} icon={ChevronRight}>Find my next call</PrimaryButton>
-        <GhostButton onClick={onBreak}><Coffee size={13} /> Take 5</GhostButton>
+        <GhostButton onClick={onBreak}>Take a Break</GhostButton>
       </div>
     </div>
   );
