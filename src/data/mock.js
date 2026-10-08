@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Settings, BarChart, Users, Plug, Sliders } from "../components/icons";
+import { ArrowLeftRight, Settings, BarChart, Users, Plug, Sliders, Route } from "../components/icons";
 
 // ---------- mock data ----------
 export const ACCOUNTS = ["Mercy Health Network", "Riverside Health Partners", "Sunrise Medical Group"];
@@ -77,6 +77,7 @@ export const PHARMACISTS = [{ name: "Dr. Alvarez", status: "available", wait: nu
 
 // ---------- manager admin mock data ----------
 export const NAV_ITEMS = [
+  { id: "engagements", label: "Engagements", icon: Route },
   { id: "overview", label: "Overview", icon: BarChart },
   { id: "agents", label: "Agents", icon: Users },
   { id: "priority", label: "Engagement Priority", icon: Sliders },

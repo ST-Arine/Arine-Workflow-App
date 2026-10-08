@@ -133,7 +133,7 @@ export const ADMIN_PAGES = {
   quickconnects: AdminQuickConnects, integrations: AdminIntegrations, settings: AdminSettings,
 };
 
-export function ManagerShell({ onToggleRole }) {
+export function ManagerShell({ onToggleRole, engagements }) {
   const [adminPage, setAdminPage] = useState("overview");
   const [account, setAccount] = useState(ACCOUNTS[0]);
   const activeItem = NAV_ITEMS.find((n) => n.id === adminPage);
@@ -161,11 +161,13 @@ export function ManagerShell({ onToggleRole }) {
         </div>
       </div>
 
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-8 pb-10" style={{ paddingTop: 32 }}>
-        <h1 style={{ ...serif, color: C.ink }} className="text-2xl mb-1">{activeItem.label}</h1>
-        <p style={{ ...sans, color: C.inkMuted }} className="text-sm mb-6">Configuration for your organization's calling workflow.</p>
-        <PageComponent />
-      </div>
+      {adminPage === "engagements" ? engagements : (
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-8 pb-10" style={{ paddingTop: 32 }}>
+          <h1 style={{ ...serif, color: C.ink }} className="text-2xl mb-1">{activeItem.label}</h1>
+          <p style={{ ...sans, color: C.inkMuted }} className="text-sm mb-6">Configuration for your organization's calling workflow.</p>
+          <PageComponent />
+        </div>
+      )}
     </AppShell>
   );
 }
