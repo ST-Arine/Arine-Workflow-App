@@ -37,9 +37,12 @@ textarea:focus, input:focus, button:focus-visible { outline: 2px solid #FF8A3D; 
 .glass { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(16px); }
 button { transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; }
 button:active:not(:disabled) { transform: scale(0.96); }
+/* Shared hover lift + click press for prominent buttons (must come after the generic :active rule). */
+.btn-lift:hover:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+.btn-lift:active:not(:disabled) { transform: scale(0.96); }
 a, .status-dot { transition: background-color 0.3s ease, color 0.3s ease; }
 @media (prefers-reduced-motion: reduce) {
   .rise-in, .fade-in, .pop-in { animation: none; }
   .spin-ring, .blob { animation: none !important; }
-  button:active:not(:disabled) { transform: none; }
+  button:active:not(:disabled), .btn-lift:hover:not(:disabled), .btn-lift:active:not(:disabled) { transform: none; }
 }
