@@ -34,3 +34,4 @@ export const BarChart = (p) => <Icon {...p} path={<><line x1="4" y1="20" x2="4" 
 export const Users = (p) => <Icon {...p} path={<><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 20c0-2.5 1.2-4.5 3-5.3"/></>} />;
 export const Plug = (p) => <Icon {...p} path={<><path d="M9 2v6M15 2v6M7 8h10l-1 6a4 4 0 0 1-4 4h0a4 4 0 0 1-4-4z"/><line x1="12" y1="18" x2="12" y2="22"/></>} />;
 export const Sliders = (p) => <Icon {...p} path={<><line x1="6" y1="4" x2="6" y2="20"/><circle cx="6" cy="9" r="1.6"/><line x1="12" y1="4" x2="12" y2="20"/><circle cx="12" cy="15" r="1.6"/><line x1="18" y1="4" x2="18" y2="20"/><circle cx="18" cy="7" r="1.6"/></>} />;
+export const Route = (p) => <Icon {...p} path={<><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></>} />;

@@ -1,44 +1,13 @@
 import { useState } from "react";
 import { C, serif, sans } from "../theme";
-import { Check, X, Plus, Menu } from "../components/icons";
+import { Check, X, Plus } from "../components/icons";
 import { ACCOUNTS, PHARMACISTS, NAV_ITEMS, MOCK_AGENTS, PRIORITY_RULES, INTEGRATIONS } from "../data/mock";
 import { Badge, Panel, GhostButton } from "../components/ui";
-import { AccountSwitcher, STATUS_MAP, ProfileMenu } from "../components/menus";
+import { AccountSwitcher, STATUS_MAP } from "../components/menus";
+import { AppShell } from "../components/SideNav";
 
 // ---------- APP ----------
 // ---------- manager admin shell ----------
-export function NavDrawer({ open, onClose, activePage, onSelect }) {
-  if (!open) return null;
-  return (
-    <div
-      style={{ position: "fixed", inset: 0, background: "rgba(10,6,20,0.55)", zIndex: 55 }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="rise-in glass" style={{ position: "fixed", top: 0, left: 0, bottom: 0, width: 260, borderRight: `1px solid ${C.border}`, boxShadow: "0 0 50px -10px rgba(0,0,0,0.5)", padding: 16 }}>
-        <div className="flex items-center justify-between mb-5 px-2">
-          <span style={{ ...serif, color: C.ink }} className="text-base">Admin</span>
-          <button onClick={onClose} className="p-2 -m-2"><X size={16} color={C.inkMuted} /></button>
-        </div>
-        <div className="flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => {
-            const active = item.id === activePage;
-            return (
-              <button
-                key={item.id}
-                onClick={() => { onSelect(item.id); onClose(); }}
-                style={{ ...sans, background: active ? C.primarySoft : "transparent", color: active ? C.primary : C.inkMuted, fontWeight: active ? 700 : 500 }}
-                className="text-sm flex items-center gap-3 px-3 py-2.5 rounded-xl text-left"
-              >
-                <item.icon size={16} /> {item.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function AdminOverview() {
   const online = MOCK_AGENTS.filter((a) => a.status !== "break").length;
   const totalCalls = MOCK_AGENTS.reduce((sum, a) => sum + a.callsToday, 0);
@@ -165,37 +134,38 @@ export const ADMIN_PAGES = {
 };
 
 export function ManagerShell({ onToggleRole }) {
-  const [navOpen, setNavOpen] = useState(false);
   const [adminPage, setAdminPage] = useState("overview");
   const [account, setAccount] = useState(ACCOUNTS[0]);
   const activeItem = NAV_ITEMS.find((n) => n.id === adminPage);
   const PageComponent = ADMIN_PAGES[adminPage];
 
-  return (
-    <div style={{ background: C.bg, minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+  const background = (
+    <>
       <div className="blob" style={{ position: "absolute", top: "-10%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "#FF5DA2", opacity: 0.25, filter: "blur(90px)", animation: "drift1 18s ease-in-out infinite" }} />
       <div className="blob" style={{ position: "absolute", bottom: "-15%", left: "-10%", width: 420, height: 420, borderRadius: "50%", background: "#36E2C8", opacity: 0.2, filter: "blur(90px)", animation: "drift3 20s ease-in-out infinite" }} />
+    </>
+  );
+
+  return (
+    <AppShell
+      navItems={NAV_ITEMS} activeId={adminPage} onSelect={setAdminPage} background={background}
+      profileProps={{ name: "Dana R.", status: "available", onGoBreak: () => {}, onBackFromBreak: () => {}, role: "manager", onToggleRole }}
+    >
       <div
-        style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 45, background: "rgba(25,15,51,0.7)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: `1px solid ${C.border}` }}
+        style={{ position: "sticky", top: 0, zIndex: 45, background: "rgba(25,15,51,0.7)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: `1px solid ${C.border}` }}
         className="flex items-center justify-between px-4 sm:px-6 py-3"
       >
-        <div className="flex items-center gap-3">
-          <button onClick={() => setNavOpen(true)} style={{ color: C.inkMuted }} className="p-2 -m-2"><Menu size={18} /></button>
-          <ProfileMenu name="Dana R." status="available" onGoBreak={() => {}} onBackFromBreak={() => {}} role="manager" onToggleRole={onToggleRole} />
-          <span style={{ ...serif, color: C.ink, fontWeight: 600 }} className="text-base">Hello, Dana 👋</span>
-        </div>
+        <span style={{ ...serif, color: C.ink, fontWeight: 600 }} className="text-base">Hello, Dana 👋</span>
         <div className="flex items-center gap-4">
           <AccountSwitcher account={account} setAccount={setAccount} />
         </div>
       </div>
 
-      <NavDrawer open={navOpen} onClose={() => setNavOpen(false)} activePage={adminPage} onSelect={setAdminPage} />
-
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-8 pb-10" style={{ paddingTop: 88 }}>
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-8 pb-10" style={{ paddingTop: 32 }}>
         <h1 style={{ ...serif, color: C.ink }} className="text-2xl mb-1">{activeItem.label}</h1>
         <p style={{ ...sans, color: C.inkMuted }} className="text-sm mb-6">Configuration for your organization's calling workflow.</p>
         <PageComponent />
       </div>
-    </div>
+    </AppShell>
   );
 }
