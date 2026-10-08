@@ -14,7 +14,7 @@ import { ManagerShell } from "./screens/Admin";
 import { AppShell } from "./components/SideNav";
 import { Phone } from "./components/icons";
 
-const CALLER_NAV = [{ id: "workflow", label: "My calls", icon: Phone }];
+const CALLER_NAV = [{ id: "workflow", label: "Engagements", icon: Phone }];
 
 export default function WorkflowAssistant() {
   const [role, setRole] = useState("caller"); // caller | manager
