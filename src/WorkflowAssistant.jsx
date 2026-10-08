@@ -12,9 +12,9 @@ import { ReviewStep } from "./screens/ReviewStep";
 import { FaxStep } from "./screens/FaxStep";
 import { ManagerShell } from "./screens/Admin";
 import { AppShell } from "./components/SideNav";
-import { Phone } from "./components/icons";
+import { Route } from "./components/icons";
 
-const CALLER_NAV = [{ id: "workflow", label: "Engagements", icon: Phone }];
+const CALLER_NAV = [{ id: "workflow", label: "Engagements", icon: Route }];
 
 export default function WorkflowAssistant() {
   const [role, setRole] = useState("caller"); // caller | manager
