@@ -93,8 +93,24 @@ export default function WorkflowAssistant() {
   const wide = phase === "call" || phase === "prep";
   const toggleRole = () => setRole((r) => (r === "caller" ? "manager" : "caller"));
 
+  // The engagement journey is shared: the caller's main view, and an "Engagements" page in the manager nav
+  const journey = (
+    <div className={`relative mx-auto px-4 sm:px-8 pb-10 ${wide ? "max-w-5xl" : "max-w-xl"}`} style={{ paddingTop: 24 }}>
+      <RecapTrail items={recap} />
+
+      {phase === "welcome" && <WelcomeScreen completedCount={completedCount} onFind={startSearch} onBreak={goOnBreak} />}
+      {phase === "break" && <BreakScreen onReturn={backFromBreak} />}
+      {phase === "loading" && <LoaderScreen />}
+      {phase === "found" && engagement && <FoundScreen engagement={engagement} onPrep={goPrep} onShowAnother={showAnother} />}
+      {phase === "prep" && engagement && <PrepStep engagement={engagement} agenda={agenda} setAgenda={setAgenda} onBack={() => setPhase("found")} onStartCall={startCall} />}
+      {phase === "call" && engagement && <CallStep engagement={engagement} agenda={agenda} setAgenda={setAgenda} observations={observations} setObservations={setObservations} onEndCall={endCall} />}
+      {phase === "review" && <ReviewStep engagement={engagement} agenda={agenda} followUps={followUps} setFollowUps={setFollowUps} onBack={() => setPhase("call")} onProceed={proceedToFax} />}
+      {phase === "fax" && <FaxStep followUps={followUps} setFollowUps={setFollowUps} onFinish={finishEngagement} />}
+    </div>
+  );
+
   if (role === "manager") {
-    return <ManagerShell onToggleRole={toggleRole} />;
+    return <ManagerShell onToggleRole={toggleRole} engagements={journey} />;
   }
 
   const background = (
@@ -111,18 +127,7 @@ export default function WorkflowAssistant() {
       profileProps={{ name: "Dana R.", status, onGoBreak: goOnBreak, onBackFromBreak: backFromBreak, role, onToggleRole: toggleRole }}
     >
       <TopBar completedCount={completedCount} account={account} setAccount={setAccount} />
-      <div className={`relative mx-auto px-4 sm:px-8 pb-10 ${wide ? "max-w-5xl" : "max-w-xl"}`} style={{ paddingTop: 24 }}>
-        <RecapTrail items={recap} />
-
-        {phase === "welcome" && <WelcomeScreen completedCount={completedCount} onFind={startSearch} onBreak={goOnBreak} />}
-        {phase === "break" && <BreakScreen onReturn={backFromBreak} />}
-        {phase === "loading" && <LoaderScreen />}
-        {phase === "found" && engagement && <FoundScreen engagement={engagement} onPrep={goPrep} onShowAnother={showAnother} />}
-        {phase === "prep" && engagement && <PrepStep engagement={engagement} agenda={agenda} setAgenda={setAgenda} onBack={() => setPhase("found")} onStartCall={startCall} />}
-        {phase === "call" && engagement && <CallStep engagement={engagement} agenda={agenda} setAgenda={setAgenda} observations={observations} setObservations={setObservations} onEndCall={endCall} />}
-        {phase === "review" && <ReviewStep engagement={engagement} agenda={agenda} followUps={followUps} setFollowUps={setFollowUps} onBack={() => setPhase("call")} onProceed={proceedToFax} />}
-        {phase === "fax" && <FaxStep followUps={followUps} setFollowUps={setFollowUps} onFinish={finishEngagement} />}
-      </div>
+      {journey}
     </AppShell>
   );
 }

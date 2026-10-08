@@ -61,7 +61,7 @@ export function SideNav({ items, activeId, onSelect, expanded, onToggle, profile
 export function AppShell({ navItems, activeId, onSelect, profileProps, background, children }) {
   const [expanded, setExpanded] = useState(() => {
     const saved = localStorage.getItem("navExpanded");
-    return saved === null ? window.innerWidth >= 1024 : saved === "true";
+    return saved === "true"; // closed by default; remembers the user's choice across refreshes
   });
   const toggle = () => setExpanded((e) => { localStorage.setItem("navExpanded", String(!e)); return !e; });
 
