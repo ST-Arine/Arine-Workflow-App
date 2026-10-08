@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: 'Manrope', sans-serif; background: #190F33; }
+textarea, input, button { font-family: inherit; }
+textarea, input { background: rgba(255,255,255,0.1); color: #FFFFFF; }
+textarea::placeholder, input::placeholder { color: rgba(255,255,255,0.4); }
+textarea:focus, input:focus, button:focus-visible { outline: 2px solid #FF8A3D; outline-offset: 1px; }
+/* iOS Safari zooms the whole page in on focus if an input's font-size is under 16px — force 16px on small screens regardless of the text-sm utility class applied to it. */
+@media (max-width: 640px) {
+  input, textarea { font-size: 16px !important; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 60% { opacity: 1; transform: scale(1.18); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,93,162,0.25); } 50% { box-shadow: 0 0 0 7px rgba(255,93,162,0.1); } }
+@keyframes drift1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6%, 8%) scale(1.15); } }
+@keyframes drift2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-8%, -5%) scale(1.1); } }
+@keyframes drift3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -8%) scale(1.2); } }
+@keyframes barBounce { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+.rise-in { animation: riseIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.fade-in { animation: fadeIn 0.35s ease-out both; }
+.pop-in { animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes slideLeftIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideRightIn { from { opacity: 0; transform: translateX(-50px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+.slide-left-in { animation: slideLeftIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.slide-right-in { animation: slideRightIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.1s; }
+@media (prefers-reduced-motion: reduce) {
+  .slide-left-in, .slide-right-in { animation: none; }
+}
+.stagger { animation-fill-mode: both; }
+.glass { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(16px); }
+button { transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; }
+button:active:not(:disabled) { transform: scale(0.96); }
+a, .status-dot { transition: background-color 0.3s ease, color 0.3s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .rise-in, .fade-in, .pop-in { animation: none; }
+  .spin-ring, .blob { animation: none !important; }
+  button:active:not(:disabled) { transform: none; }
+}
