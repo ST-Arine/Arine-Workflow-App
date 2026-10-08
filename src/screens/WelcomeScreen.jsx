@@ -1,22 +1,17 @@
-import { C, serif, sans } from "../theme";
 import { ChevronRight } from "../components/icons";
 import { PrimaryButton, GhostButton } from "../components/ui";
+import { HeroScreen } from "../components/HeroScreen";
 
 // ---------- WELCOME ----------
 export function WelcomeScreen({ completedCount, onFind, onBreak }) {
   const returning = completedCount > 0;
   return (
-    <div className="rise-in" style={{ marginTop: 80 }}>
-      <h1 style={{ ...serif, color: C.ink, letterSpacing: "-0.01em" }} className="text-5xl mb-3">
-        {returning ? `You're on a roll 🔥` : `Ready when you are ✨`}
-      </h1>
-      <p style={{ ...sans, color: C.inkMuted }} className="text-base mb-8">
-        {returning ? `${completedCount} down today. Keep going, or grab a breather?` : "Let's find your next call."}
-      </p>
-      <div className="flex items-center flex-wrap gap-3">
-        <PrimaryButton onClick={onFind} icon={ChevronRight} iconRight>Find my next call</PrimaryButton>
-        <GhostButton large onClick={onBreak}>Take a Break</GhostButton>
-      </div>
-    </div>
+    <HeroScreen
+      title={returning ? `You're on a roll 🔥` : `Ready when you are ✨`}
+      subtitle={returning ? `${completedCount} down today. Keep going, or grab a breather?` : "Let's find your next call."}
+    >
+      <PrimaryButton onClick={onFind} icon={ChevronRight} iconRight>Find my next call</PrimaryButton>
+      <GhostButton large onClick={onBreak}>Take a Break</GhostButton>
+    </HeroScreen>
   );
 }
