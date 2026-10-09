@@ -20,15 +20,11 @@ export function FaxStep({ followUps, setFollowUps, onFinish }) {
           <Panel key={f.id}>
             <div style={{ ...sans, color: C.inkMuted }} className="text-xs mb-2">To: {f.recipient}</div>
             <textarea value={drafts[f.id]} onChange={(e) => setDrafts((d) => ({ ...d, [f.id]: e.target.value }))} disabled={f.sent} style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm p-2 border rounded-sm mb-2" rows={2} />
-            <div className="flex justify-end">
-              {f.sent ? <Badge tone="green"><Check size={12} /> Sent</Badge> : <PrimaryButton onClick={() => send(f.id)} icon={Send}>Send fax</PrimaryButton>}
-            </div>
+            {f.sent ? <Badge tone="green"><Check size={12} /> Sent</Badge> : <PrimaryButton onClick={() => send(f.id)} icon={Send}>Send fax</PrimaryButton>}
           </Panel>
         ))}
       </div>
-      <div className="flex justify-end">
-        <PrimaryButton disabled={!allSent} onClick={onFinish} icon={RotateCcw}>Done! Find next 🎉</PrimaryButton>
-      </div>
+      <PrimaryButton disabled={!allSent} onClick={onFinish} icon={RotateCcw}>Done! Find next 🎉</PrimaryButton>
     </div>
   );
 }

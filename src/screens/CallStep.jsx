@@ -230,7 +230,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
           {transferState === "done" && (
             <div>
               <p style={{ ...sans, color: C.green }} className="text-sm font-medium flex items-center gap-1.5 mb-4"><CheckCircle2 size={14} /> Transferred to Dr. Alvarez</p>
-              <div className="flex justify-end"><PrimaryButton onClick={() => setTransferModalOpen(false)}>Close</PrimaryButton></div>
+              <PrimaryButton onClick={() => setTransferModalOpen(false)}>Close</PrimaryButton>
             </div>
           )}
         </Modal>
