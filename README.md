@@ -23,7 +23,8 @@ npm run lint     # static checks
 
 ## Demo users
 
-The profile menu has **Switch to …** to swap between two demo callers:
+The profile menu (bottom-left of the nav) has a **Switch user** list that is identical in every view, including the manager view:
 
-- **Dana R.** — patient, pharmacy and patient-flag engagements (single-patient calls).
-- **Jordan K.** — a provider call (Dr. Lee) with three patients to discuss as separate topics (not a group call). Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. Items the system is unsure about must have their patient confirmed before they can be approved.
+- **Dana - patient flow** — patient, pharmacy and patient-flag engagements (single-patient calls).
+- **Jordan - provider flow** — a provider call (Dr. Lee) with three patients to discuss as separate topics (not a group call). Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. When the system can't tell which patient an observation is for, it shows **Select Patient** and the item can't be approved until one is chosen.
+- **Sally - manager/lead view** — the admin view. Switching between a caller and the manager keeps the caller's in-progress engagement; switching to a different caller starts fresh.

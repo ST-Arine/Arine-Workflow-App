@@ -72,8 +72,9 @@ export const QUEUE = [
 
 // Demo users: each caller has their own queue. Jordan's is the provider call so it's quick to reach.
 export const USERS = [
-  { id: "dana", name: "Dana R.", first: "Dana", queue: ["e1", "e2", "e3"] },
-  { id: "jordan", name: "Jordan K.", first: "Jordan", queue: ["e4"] },
+  { id: "dana", name: "Dana R.", first: "Dana", label: "Dana - patient flow", role: "caller", queue: ["e1", "e2", "e3"] },
+  { id: "jordan", name: "Jordan K.", first: "Jordan", label: "Jordan - provider flow", role: "caller", queue: ["e4"] },
+  { id: "sally-manager", name: "Sally", first: "Sally", label: "Sally - manager/lead view", role: "manager" },
 ];
 
 export const CALL_SCRIPT = {

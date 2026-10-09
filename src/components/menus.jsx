@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { C, serif, sans } from "../theme";
-import { Check, Building, Settings, LogOut, Users, User } from "./icons";
+import { Check, Building, Settings, LogOut, User } from "./icons";
 import { ACCOUNTS } from "../data/mock";
 
 // ---------- dropdown helpers ----------
@@ -139,7 +139,7 @@ export const STATUS_MAP = {
   break: { label: "On break", color: C.amber },
 };
 
-export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPreferences, onLogout, role, onToggleRole, onSwitchUser, otherUserName, expanded = false }) {
+export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPreferences, onLogout, users = [], activeUserId, onSelectUser, expanded = false }) {
   const [hover, setHover] = useState(false);
   const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   const s = STATUS_MAP[status];
@@ -209,11 +209,17 @@ export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPrefer
         )}
         <div style={{ borderTop: `1px solid ${C.border}` }} className="my-1" />
         <DropdownItem icon={Settings} onClick={onPreferences}>Preferences</DropdownItem>
-        {onSwitchUser && <DropdownItem icon={User} onClick={onSwitchUser}>Switch to {otherUserName}</DropdownItem>}
-        {onToggleRole && (
-          <DropdownItem icon={Users} onClick={onToggleRole}>
-            Switch to {role === "manager" ? "caller" : "manager"} view
-          </DropdownItem>
+        {users.length > 0 && (
+          <>
+            <div style={{ borderTop: `1px solid ${C.border}` }} className="my-1" />
+            <div style={{ ...sans, color: C.inkFaint }} className="text-xs px-3 py-1 uppercase tracking-wide">Switch user</div>
+            {users.map((u) => (
+              <DropdownItem key={u.id} icon={u.id === activeUserId ? Check : User} onClick={() => onSelectUser(u.id)}>
+                <span style={{ color: u.id === activeUserId ? C.primary : "#FFFFFF" }}>{u.label}</span>
+              </DropdownItem>
+            ))}
+            <div style={{ borderTop: `1px solid ${C.border}` }} className="my-1" />
+          </>
         )}
         <DropdownItem icon={LogOut} tone="danger" onClick={onLogout}>Log out</DropdownItem>
       </>

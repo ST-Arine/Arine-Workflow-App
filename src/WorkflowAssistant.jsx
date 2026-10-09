@@ -17,7 +17,6 @@ import { Route } from "./components/icons";
 const CALLER_NAV = [{ id: "workflow", label: "Engagements", icon: Route }];
 
 export default function WorkflowAssistant() {
-  const [role, setRole] = useState("caller"); // caller | manager
   const [status, setStatus] = useState("available");
   const [account, setAccount] = useState(ACCOUNTS[0]);
   const [phase, setPhase] = useState("welcome"); // welcome | break | loading | found | prep | call | review | fax
@@ -29,17 +28,24 @@ export default function WorkflowAssistant() {
   const [completedCount, setCompletedCount] = useState(0);
   const [recap, setRecap] = useState([]);
   const [userId, setUserId] = useState(USERS[0].id);
+  const [callerId, setCallerId] = useState(USERS[0].id); // the caller whose queue and in-progress engagement are loaded (a manager views theirs)
   const user = USERS.find((u) => u.id === userId);
-  const otherUser = USERS.find((u) => u.id !== userId);
-  const queue = user.queue.map((id) => QUEUE.find((e) => e.id === id));
+  const role = user.role; // caller | manager
+  const caller = USERS.find((u) => u.id === callerId);
+  const queue = caller.queue.map((id) => QUEUE.find((e) => e.id === id));
 
-  // Demo helper: swap to the other caller, whose queue holds a different kind of engagement. Starts them fresh.
-  function switchUser() {
-    setUserId(otherUser.id);
-    setStatus("available");
-    setPhase("welcome");
-    setCandidateIdx(0);
-    setEngagement(null); setAgenda([]); setObservations([]); setFollowUps([]); setRecap([]); setCompletedCount(0);
+  // One user list for every view. Switching to another caller starts them fresh; switching to a manager keeps the caller's progress.
+  function selectUser(id) {
+    if (id === userId) return;
+    const target = USERS.find((u) => u.id === id);
+    if (target.role === "caller" && id !== callerId) {
+      setCallerId(id);
+      setStatus("available");
+      setPhase("welcome");
+      setCandidateIdx(0);
+      setEngagement(null); setAgenda([]); setObservations([]); setFollowUps([]); setRecap([]); setCompletedCount(0);
+    }
+    setUserId(id);
   }
 
   function startSearch() {
@@ -104,7 +110,6 @@ export default function WorkflowAssistant() {
   }
 
   const wide = phase === "call" || phase === "prep";
-  const toggleRole = () => setRole((r) => (r === "caller" ? "manager" : "caller"));
 
   // The engagement journey is shared: the caller's main view, and an "Engagements" page in the manager nav
   const journey = (
@@ -122,8 +127,11 @@ export default function WorkflowAssistant() {
     </div>
   );
 
+  // Same profile menu in every view: status plus the full user list
+  const profileProps = { name: user.name, status, onGoBreak: goOnBreak, onBackFromBreak: backFromBreak, users: USERS, activeUserId: userId, onSelectUser: selectUser };
+
   if (role === "manager") {
-    return <ManagerShell onToggleRole={toggleRole} engagements={journey} />;
+    return <ManagerShell user={user} profileProps={profileProps} engagements={journey} />;
   }
 
   const background = (
@@ -137,7 +145,7 @@ export default function WorkflowAssistant() {
   return (
     <AppShell
       navItems={CALLER_NAV} activeId="workflow" onSelect={() => {}} background={background}
-      profileProps={{ name: user.name, status, onGoBreak: goOnBreak, onBackFromBreak: backFromBreak, role, onToggleRole: toggleRole, onSwitchUser: switchUser, otherUserName: otherUser.name }}
+      profileProps={profileProps}
     >
       <TopBar userName={user.first} completedCount={completedCount} account={account} setAccount={setAccount} />
       {journey}

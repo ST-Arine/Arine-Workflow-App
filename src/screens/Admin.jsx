@@ -133,7 +133,7 @@ export const ADMIN_PAGES = {
   quickconnects: AdminQuickConnects, integrations: AdminIntegrations, settings: AdminSettings,
 };
 
-export function ManagerShell({ onToggleRole, engagements }) {
+export function ManagerShell({ user, profileProps, engagements }) {
   const [adminPage, setAdminPage] = useState("overview");
   const [account, setAccount] = useState(ACCOUNTS[0]);
   const activeItem = NAV_ITEMS.find((n) => n.id === adminPage);
@@ -149,13 +149,13 @@ export function ManagerShell({ onToggleRole, engagements }) {
   return (
     <AppShell
       navItems={NAV_ITEMS} activeId={adminPage} onSelect={setAdminPage} background={background}
-      profileProps={{ name: "Dana R.", status: "available", onGoBreak: () => {}, onBackFromBreak: () => {}, role: "manager", onToggleRole }}
+      profileProps={profileProps}
     >
       <div
         style={{ position: "sticky", top: 0, zIndex: 45, background: "rgba(25,15,51,0.7)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: `1px solid ${C.border}` }}
         className="flex items-center justify-between px-4 sm:px-6 py-3"
       >
-        <span style={{ ...serif, color: C.ink, fontWeight: 600 }} className="text-base">Hello, Dana 👋</span>
+        <span style={{ ...serif, color: C.ink, fontWeight: 600 }} className="text-base">Hello, {user.first} 👋</span>
         <div className="flex items-center gap-4">
           <AccountSwitcher account={account} setAccount={setAccount} />
         </div>
