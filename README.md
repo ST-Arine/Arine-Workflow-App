@@ -26,4 +26,4 @@ npm run lint     # static checks
 The profile menu has **Switch to …** to swap between two demo callers:
 
 - **Dana R.** — patient, pharmacy and patient-flag engagements (single-patient calls).
-- **Jordan K.** — a provider call (Dr. Lee) covering three patients. Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. Items the system is unsure about must have their patient confirmed before they can be approved.
+- **Jordan K.** — a provider call (Dr. Lee) with three patients to discuss as separate topics (not a group call). Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. Items the system is unsure about must have their patient confirmed before they can be approved.
