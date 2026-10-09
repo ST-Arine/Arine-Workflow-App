@@ -19,4 +19,4 @@ npm run lint     # static checks
 
 ## UI conventions
 
-- **Buttons:** primary on the right, secondary on the left. Secondary buttons match the primary's shape but are outline-only with no fill (`<GhostButton large>`). A lone primary button also goes on the right.
+- **Buttons:** when a primary and secondary button appear together, they sit side by side with the secondary on the left and the primary directly to its right. Secondary buttons match the primary's shape but are outline-only with no fill (`<GhostButton large>`). Don't spread them to opposite edges of the page.
