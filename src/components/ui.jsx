@@ -41,7 +41,7 @@ export function GhostButton({ children, onClick, tone = "default", disabled = fa
   const base = tone === "danger" ? C.danger : "#FFFFFF";
   return (
     <button onClick={onClick} disabled={disabled} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      style={{ color: disabled ? C.inkFaint : base, borderColor: hover && !disabled ? base : C.border, background: hover && !disabled ? (tone === "danger" ? C.dangerSoft : "rgba(255,255,255,0.12)") : "rgba(255,255,255,0.04)", boxShadow: large && hover && !disabled ? "0 10px 28px -10px rgba(255,255,255,0.3)" : "none", ...sans, fontWeight: 600 }}
+      style={{ color: disabled ? C.inkFaint : base, borderColor: hover && !disabled ? base : large ? "rgba(255,255,255,0.45)" : C.border, background: large ? "transparent" : hover && !disabled ? (tone === "danger" ? C.dangerSoft : "rgba(255,255,255,0.12)") : "rgba(255,255,255,0.04)", boxShadow: large && hover && !disabled ? "0 10px 28px -10px rgba(255,255,255,0.3)" : "none", ...sans, fontWeight: 600 }}
       className={`${large ? "btn-lift px-6 py-[11px]" : "px-4 py-2"} rounded-full text-sm border inline-flex items-center gap-1.5 disabled:cursor-not-allowed`}>
       {children}
     </button>
