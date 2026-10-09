@@ -3,9 +3,11 @@ import { C, sans } from "../theme";
 import { Check, X, CheckCircle2, Pencil, Trash, Plus, ChevronRight, RotateCcw, User } from "../components/icons";
 import { Badge, Panel, PrimaryButton, GhostButton } from "../components/ui";
 import { UNBLOCK_COMPONENTS } from "../components/unblock";
+import { PatientHeader, PatientPicker, groupByPatient } from "../components/patients";
 
 // ---------- add-your-own follow-up ----------
-export function AddFollowUpForm({ onAdd, onCancel }) {
+export function AddFollowUpForm({ onAdd, onCancel, patients }) {
+  const [patientId, setPatientId] = useState(patients ? patients[0].id : undefined);
   const [type, setType] = useState("new-task");
   const [label, setLabel] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -14,6 +16,7 @@ export function AddFollowUpForm({ onAdd, onCancel }) {
   return (
     <Panel>
       <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">New item ✨</div>
+      {patients && <div className="mb-3"><PatientPicker patients={patients} value={patientId} onChange={setPatientId} /></div>}
       <div className="flex gap-1.5 mb-3">
         {typeOptions.map((o) => (
           <button key={o.v} onClick={() => setType(o.v)}
@@ -35,7 +38,7 @@ export function AddFollowUpForm({ onAdd, onCancel }) {
       )}
       <div className="flex items-center gap-2">
         <GhostButton onClick={onCancel}>Cancel</GhostButton>
-        <PrimaryButton disabled={!canAdd} onClick={() => onAdd({ type, label: label.trim(), recipient: type === "fax" ? recipient.trim() : undefined })} icon={Check}>Add it</PrimaryButton>
+        <PrimaryButton disabled={!canAdd} onClick={() => onAdd({ type, label: label.trim(), recipient: type === "fax" ? recipient.trim() : undefined, patientId })} icon={Check}>Add it</PrimaryButton>
       </div>
     </Panel>
   );
@@ -47,16 +50,85 @@ export function ReviewStep({ engagement, agenda, followUps, setFollowUps, onBack
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState("");
   const [adding, setAdding] = useState(false);
+  const patients = engagement.patients; // provider calls: every follow-up belongs to a patient, grouped below
+  // An item whose patient the system wasn't sure about can't be approved until the user confirms the patient
+  const approveStatus = (f) => (f.needsPatientCheck ? "pending" : "approved");
   const decide = (id, status) => setFollowUps((prev) => prev.map((f) => (f.id === id ? { ...f, status } : f)));
-  const save = (id) => { setFollowUps((prev) => prev.map((f) => (f.id === id ? { ...f, label: draft, status: "approved" } : f))); setEditingId(null); };
+  const setPatient = (id, patientId) => setFollowUps((prev) => prev.map((f) => (f.id === id ? { ...f, patientId, needsPatientCheck: false } : f)));
+  const save = (id) => { setFollowUps((prev) => prev.map((f) => (f.id === id ? { ...f, label: draft, status: approveStatus(f) } : f))); setEditingId(null); };
   const remove = (id) => setFollowUps((prev) => prev.filter((f) => f.id !== id));
   const resolveBlocked = (id, resolvedName) => setFollowUps((prev) => prev.map((f) => (f.id === id ? { ...f, status: "pending", resolvedNote: `${resolvedName} added to care team.` } : f)));
-  const addCustom = ({ type, label, recipient }) => {
-    setFollowUps((prev) => [...prev, { id: `custom-${Date.now()}`, type, label, recipient, status: "approved", custom: true }]);
+  const addCustom = ({ type, label, recipient, patientId }) => {
+    setFollowUps((prev) => [...prev, { id: `custom-${Date.now()}`, type, label, recipient, patientId, status: "approved", custom: true }]);
     setAdding(false);
   };
   const allDecided = followUps.every((f) => f.status === "approved" || f.status === "rejected");
   const typeLabel = { "data-entry": "Data entry", "new-task": "New task", fax: "Fax" };
+
+  const renderCard = (f) => {
+    const UnblockComponent = f.status === "blocked" ? UNBLOCK_COMPONENTS[f.precondition?.component] : null;
+    return (
+    <Panel key={f.id}>
+      <div className="flex items-center flex-wrap gap-2 mb-2">
+        <Badge tone={f.type === "fax" ? "amber" : "muted"}>{typeLabel[f.type]}</Badge>
+        {f.recipient && <span style={{ ...sans, color: C.inkMuted }} className="text-xs">to {f.recipient}</span>}
+        {f.custom && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
+        {patients && <PatientPicker patients={patients} value={f.patientId} needsCheck={f.needsPatientCheck} caption={false} onChange={(pid) => setPatient(f.id, pid)} />}
+        <button onClick={() => remove(f.id)} style={{ marginLeft: "auto" }} className="p-2 -m-2" title="Delete this item">
+          <Trash size={14} color={C.inkFaint} />
+        </button>
+      </div>
+      {editingId === f.id ? (
+        <textarea value={draft} onChange={(e) => setDraft(e.target.value)} style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm p-2 border rounded-sm mb-2" rows={2} />
+      ) : <p style={{ ...sans, color: C.ink }} className="text-sm mb-3">{f.label}</p>}
+
+      {f.needsPatientCheck && (
+        <p style={{ ...sans, color: C.amber }} className="text-xs mb-2">We weren't sure which patient this is for — pick one before approving.</p>
+      )}
+
+      {f.resolvedNote && (
+        <p style={{ ...sans, color: C.green }} className="text-xs mb-2 flex items-center gap-1.5"><CheckCircle2 size={12} /> {f.resolvedNote}</p>
+      )}
+
+      {f.status === "blocked" && UnblockComponent && (
+        <UnblockComponent engagement={engagement} data={f.precondition.data} onResolved={(name) => resolveBlocked(f.id, name)} />
+      )}
+
+      {f.status !== "blocked" && (
+        <div className="flex items-center gap-2">
+          {editingId === f.id ? (
+            <>
+              <GhostButton onClick={() => setEditingId(null)}>Cancel</GhostButton>
+              <PrimaryButton onClick={() => save(f.id)}>Save</PrimaryButton>
+            </>
+          ) : (
+            <>
+              {f.status === "pending" && (
+                <>
+                  <GhostButton disabled={f.needsPatientCheck} onClick={() => decide(f.id, "approved")}><Check size={13} color={C.green} /> Approve</GhostButton>
+                  <GhostButton onClick={() => { setEditingId(f.id); setDraft(f.label); }}><Pencil size={13} /> Edit</GhostButton>
+                  <GhostButton tone="danger" onClick={() => decide(f.id, "rejected")}><X size={13} /> Skip</GhostButton>
+                </>
+              )}
+              {f.status === "approved" && (
+                <>
+                  <Badge tone="green">Approved</Badge>
+                  <button onClick={() => { setEditingId(f.id); setDraft(f.label); }} title="Edit" className="p-2 -m-2"><Pencil size={13} color={C.inkFaint} /></button>
+                </>
+              )}
+              {f.status === "rejected" && (
+                <>
+                  <Badge tone="muted">Skipped</Badge>
+                  <button onClick={() => decide(f.id, approveStatus(f))} title="Bring it back" className="p-2 -m-2"><RotateCcw size={13} color={C.inkFaint} /></button>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </Panel>
+    );
+  };
 
   return (
     <div className="rise-in max-w-2xl">
@@ -68,67 +140,18 @@ export function ReviewStep({ engagement, agenda, followUps, setFollowUps, onBack
       )}
       <div className="flex flex-col gap-3 mb-5">
         {followUps.length === 0 && !adding && <Panel><p style={{ ...sans, color: C.inkMuted }} className="text-sm">Nothing yet — add one below if something came up. 👇</p></Panel>}
-        {followUps.map((f) => {
-          const UnblockComponent = f.status === "blocked" ? UNBLOCK_COMPONENTS[f.precondition?.component] : null;
-          return (
-          <Panel key={f.id}>
-            <div className="flex items-center flex-wrap gap-2 mb-2">
-              <Badge tone={f.type === "fax" ? "amber" : "muted"}>{typeLabel[f.type]}</Badge>
-              {f.recipient && <span style={{ ...sans, color: C.inkMuted }} className="text-xs">to {f.recipient}</span>}
-              {f.custom && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
-              <button onClick={() => remove(f.id)} style={{ marginLeft: "auto" }} className="p-2 -m-2" title="Delete this item">
-                <Trash size={14} color={C.inkFaint} />
-              </button>
-            </div>
-            {editingId === f.id ? (
-              <textarea value={draft} onChange={(e) => setDraft(e.target.value)} style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm p-2 border rounded-sm mb-2" rows={2} />
-            ) : <p style={{ ...sans, color: C.ink }} className="text-sm mb-3">{f.label}</p>}
-
-            {f.resolvedNote && (
-              <p style={{ ...sans, color: C.green }} className="text-xs mb-2 flex items-center gap-1.5"><CheckCircle2 size={12} /> {f.resolvedNote}</p>
-            )}
-
-            {f.status === "blocked" && UnblockComponent && (
-              <UnblockComponent engagement={engagement} data={f.precondition.data} onResolved={(name) => resolveBlocked(f.id, name)} />
-            )}
-
-            {f.status !== "blocked" && (
-              <div className="flex items-center gap-2">
-                {editingId === f.id ? (
-                  <>
-                    <GhostButton onClick={() => setEditingId(null)}>Cancel</GhostButton>
-                    <PrimaryButton onClick={() => save(f.id)}>Save</PrimaryButton>
-                  </>
-                ) : (
-                  <>
-                    {f.status === "pending" && (
-                      <>
-                        <GhostButton onClick={() => decide(f.id, "approved")}><Check size={13} color={C.green} /> Approve</GhostButton>
-                        <GhostButton onClick={() => { setEditingId(f.id); setDraft(f.label); }}><Pencil size={13} /> Edit</GhostButton>
-                        <GhostButton tone="danger" onClick={() => decide(f.id, "rejected")}><X size={13} /> Skip</GhostButton>
-                      </>
-                    )}
-                    {f.status === "approved" && (
-                      <>
-                        <Badge tone="green">Approved</Badge>
-                        <button onClick={() => { setEditingId(f.id); setDraft(f.label); }} title="Edit" className="p-2 -m-2"><Pencil size={13} color={C.inkFaint} /></button>
-                      </>
-                    )}
-                    {f.status === "rejected" && (
-                      <>
-                        <Badge tone="muted">Skipped</Badge>
-                        <button onClick={() => decide(f.id, "approved")} title="Bring it back" className="p-2 -m-2"><RotateCcw size={13} color={C.inkFaint} /></button>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </Panel>
-          );
-        })}
+        {patients ? (
+          <div className="flex flex-col gap-5">
+            {groupByPatient(followUps, patients).map((g) => (
+              <section key={g.patient.id} aria-label={`Follow-ups for ${g.patient.name}`}>
+                <PatientHeader patient={g.patient} count={g.items.length} />
+                <div className="flex flex-col gap-3">{g.items.map(renderCard)}</div>
+              </section>
+            ))}
+          </div>
+        ) : followUps.map(renderCard)}
         {adding ? (
-          <AddFollowUpForm onAdd={addCustom} onCancel={() => setAdding(false)} />
+          <AddFollowUpForm onAdd={addCustom} onCancel={() => setAdding(false)} patients={patients} />
         ) : (
           <GhostButton onClick={() => setAdding(true)}><Plus size={13} /> Add your own item</GhostButton>
         )}

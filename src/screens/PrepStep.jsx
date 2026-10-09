@@ -2,6 +2,7 @@ import { useState } from "react";
 import { C, serif, sans } from "../theme";
 import { Check, X, Phone, Pencil, Plus, AlertCircle, User } from "../components/icons";
 import { Badge, Panel, PrimaryButton, GhostButton, Avatar } from "../components/ui";
+import { PatientHeader, PatientPicker, groupByPatient } from "../components/patients";
 
 // ---------- PREP ----------
 export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall }) {
@@ -12,11 +13,12 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
   const [addingItem, setAddingItem] = useState(false);
   const [newItemLabel, setNewItemLabel] = useState("");
   const stillSuggested = engagement.aiAgendaSuggestions.filter((s) => !agenda.find((a) => a.id === s.id));
-  const isPharmacy = engagement.kind === "pharmacy";
+  const patients = engagement.patients; // provider calls cover several patients
+  const [newItemPatient, setNewItemPatient] = useState(patients ? patients[0].id : null);
 
   function addOwnItem() {
     if (!newItemLabel.trim()) return;
-    setAgenda([...agenda, { id: `custom-${Date.now()}`, label: newItemLabel.trim(), source: "custom" }]);
+    setAgenda([...agenda, { id: `custom-${Date.now()}`, label: newItemLabel.trim(), source: "custom", patientId: patients ? newItemPatient : undefined }]);
     setNewItemLabel("");
     setAddingItem(false);
   }
@@ -40,7 +42,21 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
             </div>
           </Panel>
 
-          {!isPharmacy && (
+          {patients && (
+            <Panel>
+              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">Patients on this call</div>
+              <ul className="flex flex-col gap-2">
+                {patients.map((pt) => (
+                  <li key={pt.id}>
+                    <div style={{ ...sans, color: C.ink }} className="text-sm font-semibold">{pt.name}</div>
+                    <div style={{ ...sans, color: C.inkFaint }} className="text-xs">{pt.dob} · {pt.mrn}</div>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+
+          {engagement.medications && (
             <Panel>
               <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">Medications</div>
               <ul className="flex flex-col gap-1 mb-3">
@@ -69,26 +85,38 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
         <div className="slide-right-in flex-1">
           <Panel elevated>
             <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-3 uppercase tracking-wide">Agenda</div>
-            <ul className="flex flex-col gap-2 mb-3">
-              {agenda.map((a) => (
-                <li key={a.id} className="flex items-center gap-2">
-                  {editingId === a.id ? (
-                    <>
-                      <input value={draft} onChange={(e) => setDraft(e.target.value)} style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="flex-1 text-sm px-2 py-1 border rounded-sm" />
-                      <button onClick={() => { setAgenda(agenda.map(x => x.id === a.id ? { ...x, label: draft } : x)); setEditingId(null); }} className="p-2 -m-2"><Check size={15} color={C.green} /></button>
-                    </>
-                  ) : (
-                    <>
-                      <span style={{ ...sans, color: C.ink }} className="text-sm flex-1">{a.label}</span>
-                      {a.source === "ai" && <Badge tone="amber">AI added</Badge>}
-                      {a.source === "custom" && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
-                      <button onClick={() => { setEditingId(a.id); setDraft(a.label); }} className="p-2 -m-2"><Pencil size={13} color={C.inkMuted} /></button>
-                      <button onClick={() => removeItem(a.id)} className="p-2 -m-2"><X size={15} color={C.inkMuted} /></button>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {(() => {
+              const renderRow = (a) => (
+                  <li key={a.id} className="flex items-center gap-2">
+                    {editingId === a.id ? (
+                      <>
+                        <input value={draft} onChange={(e) => setDraft(e.target.value)} style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="flex-1 text-sm px-2 py-1 border rounded-sm" />
+                        <button onClick={() => { setAgenda(agenda.map(x => x.id === a.id ? { ...x, label: draft } : x)); setEditingId(null); }} className="p-2 -m-2"><Check size={15} color={C.green} /></button>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ ...sans, color: C.ink }} className="text-sm flex-1">{a.label}</span>
+                        {a.source === "ai" && <Badge tone="amber">AI added</Badge>}
+                        {a.source === "custom" && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
+                        <button onClick={() => { setEditingId(a.id); setDraft(a.label); }} className="p-2 -m-2"><Pencil size={13} color={C.inkMuted} /></button>
+                        <button onClick={() => removeItem(a.id)} className="p-2 -m-2"><X size={15} color={C.inkMuted} /></button>
+                      </>
+                    )}
+                  </li>
+              );
+              return patients ? (
+                <div className="flex flex-col gap-4 mb-3">
+                  {groupByPatient(agenda, patients).map((g) => (
+                    <div key={g.patient.id}>
+                      <PatientHeader patient={g.patient} compact />
+                      <ul className="flex flex-col gap-2 pl-6">{g.items.map(renderRow)}</ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="flex flex-col gap-2 mb-3">{agenda.map(renderRow)}</ul>
+              );
+            })()}
             {stillSuggested.length > 0 && (
               <div style={{ borderColor: C.border }} className="border-t pt-3 mb-3 flex flex-col gap-2">
                 {stillSuggested.map((s) => (
@@ -103,14 +131,15 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
             )}
             {addingItem ? (
               <div className="fade-in flex flex-col gap-2">
+                {patients && <div><PatientPicker patients={patients} value={newItemPatient} onChange={setNewItemPatient} /></div>}
                 <input
                   autoFocus value={newItemLabel} onChange={(e) => setNewItemLabel(e.target.value)} placeholder="What should be on the agenda?"
                   onKeyDown={(e) => e.key === "Enter" && addOwnItem()}
                   style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm px-2 py-1.5 border rounded-sm"
                 />
                 <div className="flex items-center gap-2">
-                  <GhostButton onClick={addOwnItem}><Check size={13} color={C.green} /> Add</GhostButton>
                   <GhostButton onClick={() => { setAddingItem(false); setNewItemLabel(""); }}>Cancel</GhostButton>
+                  <GhostButton onClick={addOwnItem}><Check size={13} color={C.green} /> Add</GhostButton>
                 </div>
               </div>
             ) : (
