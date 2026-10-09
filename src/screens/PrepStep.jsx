@@ -91,15 +91,15 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
                     {editingId === a.id ? (
                       <>
                         <input value={draft} onChange={(e) => setDraft(e.target.value)} style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="flex-1 text-sm px-2 py-1 border rounded-sm" />
-                        <button onClick={() => { setAgenda(agenda.map(x => x.id === a.id ? { ...x, label: draft } : x)); setEditingId(null); }} className="p-2 -m-2"><Check size={15} color={C.green} /></button>
+                        <button onClick={() => { setAgenda(agenda.map(x => x.id === a.id ? { ...x, label: draft } : x)); setEditingId(null); }} className="icon-btn p-2 -m-2"><Check size={15} color={C.green} /></button>
                       </>
                     ) : (
                       <>
                         <span style={{ ...sans, color: C.ink }} className="text-sm flex-1">{a.label}</span>
                         {a.source === "ai" && <Badge tone="amber">AI added</Badge>}
                         {a.source === "custom" && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
-                        <button onClick={() => { setEditingId(a.id); setDraft(a.label); }} className="p-2 -m-2"><Pencil size={13} color={C.inkMuted} /></button>
-                        <button onClick={() => removeItem(a.id)} className="p-2 -m-2"><X size={15} color={C.inkMuted} /></button>
+                        <button onClick={() => { setEditingId(a.id); setDraft(a.label); }} className="icon-btn p-2 -m-2"><Pencil size={13} color={C.inkMuted} /></button>
+                        <button onClick={() => removeItem(a.id)} className="icon-btn p-2 -m-2"><X size={15} color={C.inkMuted} /></button>
                       </>
                     )}
                   </li>
@@ -124,7 +124,7 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
                     <AlertCircle size={14} color={C.amber} />
                     <span style={{ ...sans, color: C.ink }} className="text-sm flex-1">{s.label}</span>
                     <span style={{ ...sans, color: C.inkMuted }} className="text-xs">{s.reason}</span>
-                    <button onClick={() => acceptSuggestion(s)} className="p-2 -m-2"><Check size={15} color={C.green} /></button>
+                    <button onClick={() => acceptSuggestion(s)} className="icon-btn p-2 -m-2"><Check size={15} color={C.green} /></button>
                   </div>
                 ))}
               </div>

@@ -7,7 +7,12 @@ html, body { margin: 0; padding: 0; font-family: 'Manrope', sans-serif; backgrou
 textarea, input, button { font-family: inherit; }
 textarea, input { background: rgba(255,255,255,0.1); color: #FFFFFF; }
 textarea::placeholder, input::placeholder { color: rgba(255,255,255,0.4); }
-textarea:focus, input:focus, button:focus-visible { outline: 2px solid #FF8A3D; outline-offset: 1px; }
+textarea:focus, input:focus { outline: 2px solid #FF8A3D; outline-offset: 1px; }
+/* Keyboard focus ring on everything clickable. :focus-visible means it appears when tabbing, not after a mouse click. */
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid #FF8A3D; outline-offset: 3px; }
+[role="menuitem"]:focus-visible { outline-offset: -2px; background: rgba(255,255,255,0.1); }
+button, [role="button"], [role="checkbox"] { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
 /* iOS Safari zooms the whole page in on focus if an input's font-size is under 16px — force 16px on small screens regardless of the text-sm utility class applied to it. */
 @media (max-width: 640px) {
   input, textarea { font-size: 16px !important; }
@@ -37,10 +42,17 @@ textarea:focus, input:focus, button:focus-visible { outline: 2px solid #FF8A3D; 
 .stagger { animation-fill-mode: both; }
 .glass { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(16px); }
 button { transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; }
-button:active:not(:disabled) { transform: scale(0.96); }
+button:active:not(:disabled) { transform: scale(0.96); filter: brightness(0.92); }
 /* Shared hover lift + click press for prominent buttons (must come after the generic :active rule). */
 .btn-lift:hover:not(:disabled) { transform: translateY(-1px) scale(1.02); }
-.btn-lift:active:not(:disabled) { transform: scale(0.96); }
+.btn-lift:active:not(:disabled) { transform: scale(0.96); filter: brightness(0.92); }
+/* Hover/press tint for buttons whose background is set inline (chips, pills, toggles): an inset overlay works on any background. */
+.btn-hover:hover:not(:disabled) { box-shadow: inset 0 0 0 999px rgba(255,255,255,0.10); }
+.btn-hover:active:not(:disabled) { box-shadow: inset 0 0 0 999px rgba(255,255,255,0.18); }
+/* Icon-only buttons (x, pencil, trash, ...): round tint behind the icon on hover and press. */
+.icon-btn { border-radius: 9999px; }
+.icon-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+.icon-btn:active:not(:disabled) { background: rgba(255,255,255,0.2); }
 a, .status-dot { transition: background-color 0.3s ease, color 0.3s ease; }
 @media (prefers-reduced-motion: reduce) {
   .rise-in, .fade-in, .pop-in { animation: none; }

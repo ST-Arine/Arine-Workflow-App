@@ -199,8 +199,8 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
                 <div style={{ background: C.amberSoft }} className="p-3 rounded-sm flex items-center gap-2">
                   <AlertCircle size={15} color={C.amber} />
                   <span style={{ ...sans, color: C.ink }} className="text-sm flex-1">This sounds like it covers an agenda item. Mark it?</span>
-                  <button onClick={() => resolveMatch("confirm")} className="p-2 -m-2"><Check size={16} color={C.green} /></button>
-                  <button onClick={() => resolveMatch("dismiss")} className="p-2 -m-2"><X size={16} color={C.inkMuted} /></button>
+                  <button onClick={() => resolveMatch("confirm")} className="icon-btn p-2 -m-2"><Check size={16} color={C.green} /></button>
+                  <button onClick={() => resolveMatch("dismiss")} className="icon-btn p-2 -m-2"><X size={16} color={C.inkMuted} /></button>
                 </div>
               )}
             </div>
