@@ -102,7 +102,7 @@ CALL_SCRIPT.e4 = [
   { speaker: "Dana", text: "And Helen Park is due for a renewed Lisinopril prescription.", match: "d3" },
   { speaker: "Dr. Lee", text: "I'll send that over today.", confirm: "d3" },
   { speaker: "Dr. Lee", text: "Oh, and one of them mentioned a new sulfa allergy — please get that on file.",
-    observation: "New sulfa allergy reported — needs to be added to the record.", patientId: "p2", needsPatientCheck: true },
+    observation: "New sulfa allergy reported — needs to be added to the record.", patientId: null, needsPatientCheck: true }, // system can't tell who: no guess
   { speaker: "Dr. Lee", text: "Also, please fax me Maria's latest A1c results when you have them.",
     observation: "Provider asked for the latest A1c results to be faxed to the clinic.", patientId: "p1" },
 ];
