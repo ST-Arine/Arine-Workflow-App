@@ -120,7 +120,7 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
         </div>
       </div>
 
-      <div className="flex items-center gap-3 mt-5">
+      <div className="flex items-center justify-between gap-3 mt-5">
         <GhostButton onClick={onBack}>Back</GhostButton>
         <PrimaryButton onClick={onStartCall} icon={Phone}>Start the call</PrimaryButton>
       </div>

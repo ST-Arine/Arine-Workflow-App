@@ -1,6 +1,6 @@
 import { C, serif, sans } from "../theme";
 import { Circle, ChevronRight } from "../components/icons";
-import { Badge, Panel, PrimaryButton, TextLink, Avatar, Section } from "../components/ui";
+import { Badge, Panel, PrimaryButton, GhostButton, Avatar, Section } from "../components/ui";
 
 // ---------- FOUND ----------
 export function FoundScreen({ engagement, onPrep, onShowAnother }) {
@@ -50,9 +50,9 @@ export function FoundScreen({ engagement, onPrep, onShowAnother }) {
           </ul>
         </Section>
       </Panel>
-      <div className="flex items-center gap-4">
-        <PrimaryButton onClick={onPrep} icon={ChevronRight}>Let's prep 📋</PrimaryButton>
-        <TextLink onClick={onShowAnother}>Show me someone else</TextLink>
+      <div className="flex items-center justify-between gap-4">
+        <GhostButton large onClick={onShowAnother}>Search Again</GhostButton>
+        <PrimaryButton onClick={onPrep} icon={ChevronRight} iconRight>Prepare for Engagement</PrimaryButton>
       </div>
     </div>
   );

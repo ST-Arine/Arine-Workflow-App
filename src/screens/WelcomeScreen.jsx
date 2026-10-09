@@ -10,8 +10,8 @@ export function WelcomeScreen({ completedCount, onFind, onBreak }) {
       title={returning ? `You're on a roll 🔥` : `Ready when you are ✨`}
       subtitle={returning ? `${completedCount} down today. Keep going, or grab a breather?` : "Let's find your next call."}
     >
-      <PrimaryButton onClick={onFind} icon={ChevronRight} iconRight>Find my next call</PrimaryButton>
       <GhostButton large onClick={onBreak}>Take a Break</GhostButton>
+      <PrimaryButton onClick={onFind} icon={ChevronRight} iconRight>Find my next call</PrimaryButton>
     </HeroScreen>
   );
 }

@@ -33,9 +33,9 @@ export function AddFollowUpForm({ onAdd, onCancel }) {
           style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm px-2 py-1.5 border rounded-sm mb-2"
         />
       )}
-      <div className="flex items-center gap-2">
-        <PrimaryButton disabled={!canAdd} onClick={() => onAdd({ type, label: label.trim(), recipient: type === "fax" ? recipient.trim() : undefined })} icon={Check}>Add it</PrimaryButton>
+      <div className="flex items-center justify-end gap-2">
         <GhostButton onClick={onCancel}>Cancel</GhostButton>
+        <PrimaryButton disabled={!canAdd} onClick={() => onAdd({ type, label: label.trim(), recipient: type === "fax" ? recipient.trim() : undefined })} icon={Check}>Add it</PrimaryButton>
       </div>
     </Panel>
   );
@@ -93,11 +93,11 @@ export function ReviewStep({ engagement, agenda, followUps, setFollowUps, onBack
             )}
 
             {f.status !== "blocked" && (
-              <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-2 ${editingId === f.id ? "justify-end" : ""}`}>
                 {editingId === f.id ? (
                   <>
-                    <PrimaryButton onClick={() => save(f.id)}>Save</PrimaryButton>
                     <GhostButton onClick={() => setEditingId(null)}>Cancel</GhostButton>
+                    <PrimaryButton onClick={() => save(f.id)}>Save</PrimaryButton>
                   </>
                 ) : (
                   <>
@@ -133,7 +133,7 @@ export function ReviewStep({ engagement, agenda, followUps, setFollowUps, onBack
           <GhostButton onClick={() => setAdding(true)}><Plus size={13} /> Add your own item</GhostButton>
         )}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
         <GhostButton onClick={onBack}>Back</GhostButton>
         <PrimaryButton disabled={!allDecided} onClick={onProceed} icon={ChevronRight}>On to faxing</PrimaryButton>
       </div>
