@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { C, serif, sans } from "../theme";
-import { Check, Building, Settings, LogOut, Users } from "./icons";
+import { Check, Building, Settings, LogOut, Users, User } from "./icons";
 import { ACCOUNTS } from "../data/mock";
 
 // ---------- dropdown helpers ----------
@@ -104,7 +104,7 @@ export const STATUS_MAP = {
   break: { label: "On break", color: C.amber },
 };
 
-export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPreferences, onLogout, role, onToggleRole, expanded = false }) {
+export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPreferences, onLogout, role, onToggleRole, onSwitchUser, otherUserName, expanded = false }) {
   const [hover, setHover] = useState(false);
   const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   const s = STATUS_MAP[status];
@@ -174,6 +174,7 @@ export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPrefer
         )}
         <div style={{ borderTop: `1px solid ${C.border}` }} className="my-1" />
         <DropdownItem icon={Settings} onClick={onPreferences}>Preferences</DropdownItem>
+        {onSwitchUser && <DropdownItem icon={User} onClick={onSwitchUser}>Switch to {otherUserName}</DropdownItem>}
         {onToggleRole && (
           <DropdownItem icon={Users} onClick={onToggleRole}>
             Switch to {role === "manager" ? "caller" : "manager"} view

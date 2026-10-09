@@ -49,6 +49,30 @@ export const QUEUE = [
     tasks: [{ id: "c1", label: "Follow up on new prescription side effects" }],
     aiAgendaSuggestions: [],
   },
+  {
+    // Provider call: one conversation covers several patients, so tasks, observations and follow-ups each belong to a patient.
+    id: "e4", kind: "provider", name: "Dr. Lee", practice: "Northside Family Clinic", priority: "High", reason: "3 patients with open questions for the provider",
+    phone: "(555) 330-4182", insurance: null, allergies: null, medications: null,
+    patients: [
+      { id: "p1", name: "Maria Chen", dob: "Apr 12, 1958", mrn: "MRN-88213" },
+      { id: "p2", name: "Omar Siddiqui", dob: "Nov 2, 1990", mrn: "MRN-55042" },
+      { id: "p3", name: "Helen Park", dob: "Jun 3, 1949", mrn: "MRN-67190" },
+    ],
+    history: ["Prefers fax for prescription changes", "Last call handled by Dana R., 9 days ago"],
+    pastNotes: [{ date: "Sep 24", note: "Asked us to send questions grouped by patient." }],
+    tasks: [
+      { id: "d1", patientId: "p1", label: "Confirm no Metformin adjustment after a missed dose" },
+      { id: "d2", patientId: "p2", label: "Amoxicillin side effects — continue or switch?" },
+      { id: "d3", patientId: "p3", label: "Request renewed Lisinopril prescription" },
+    ],
+    aiAgendaSuggestions: [],
+  },
+];
+
+// Demo users: each caller has their own queue. Jordan's is the provider call so it's quick to reach.
+export const USERS = [
+  { id: "dana", name: "Dana R.", first: "Dana", queue: ["e1", "e2", "e3"] },
+  { id: "jordan", name: "Jordan K.", first: "Jordan", queue: ["e4"] },
 ];
 
 export const CALL_SCRIPT = {
@@ -67,10 +91,30 @@ export const CALL_SCRIPT = {
   ],
 };
 
+CALL_SCRIPT.e4 = [
+  { speaker: "Dana", text: "Hi Dr. Lee, this is Dana from HealthLine Pharmacy Services — I have a few patient questions for you today." },
+  { speaker: "Dr. Lee", text: "Sure, go ahead." },
+  { speaker: "Dana", text: "First, Maria Chen missed a Metformin dose last week. Does her dose need any adjustment?", match: "d1" },
+  { speaker: "Dr. Lee", text: "No adjustment — have her continue as prescribed.", confirm: "d1" },
+  { speaker: "Dana", text: "Next, Omar Siddiqui is reporting stomach upset on the Amoxicillin.", match: "d2" },
+  { speaker: "Dr. Lee", text: "Let's switch him to Azithromycin — with his penicillin allergy I'd rather not push through.", confirm: "d2",
+    observation: "Provider is switching from Amoxicillin to Azithromycin 250mg.", patientId: "p2" },
+  { speaker: "Dana", text: "And Helen Park is due for a renewed Lisinopril prescription.", match: "d3" },
+  { speaker: "Dr. Lee", text: "I'll send that over today.", confirm: "d3" },
+  { speaker: "Dr. Lee", text: "Oh, and one of them mentioned a new sulfa allergy — please get that on file.",
+    observation: "New sulfa allergy reported — needs to be added to the record.", patientId: "p2", needsPatientCheck: true },
+  { speaker: "Dr. Lee", text: "Also, please fax me Maria's latest A1c results when you have them.",
+    observation: "Provider asked for the latest A1c results to be faxed to the clinic.", patientId: "p1" },
+];
+
 export const FOLLOWUP_RULES = {
   a1: { type: "data-entry", label: "Process Metformin refill in system" },
   a2: { type: "new-task", label: "Schedule annual wellness visit — send Maria available times" },
   a3: { type: "fax", label: "Fax Dr. Lee: patient missed one dose last week — confirm no adjustment needed", recipient: "Dr. Lee (Provider)" },
+  // Provider call: labels avoid patient names because the follow-up is filed under a patient (and can be moved to another)
+  d1: { type: "data-entry", label: "Document: provider confirms no Metformin dose adjustment needed" },
+  d2: { type: "fax", label: "Fax MedFast Pharmacy: prescription changed from Amoxicillin to Azithromycin 250mg (per Dr. Lee)", recipient: "MedFast Pharmacy" },
+  d3: { type: "new-task", label: "Follow up on renewed Lisinopril prescription from Dr. Lee" },
 };
 
 export const PHARMACISTS = [{ name: "Dr. Alvarez", status: "available", wait: null }, { name: "Dr. Kim", status: "busy", wait: "~6 min" }];

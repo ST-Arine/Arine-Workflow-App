@@ -20,3 +20,10 @@ npm run lint     # static checks
 ## UI conventions
 
 - **Buttons:** when a primary and secondary button appear together, they sit side by side with the secondary on the left and the primary directly to its right. Secondary buttons match the primary's shape but are outline-only with no fill (`<GhostButton large>`). Don't spread them to opposite edges of the page.
+
+## Demo users
+
+The profile menu has **Switch to …** to swap between two demo callers:
+
+- **Dana R.** — patient, pharmacy and patient-flag engagements (single-patient calls).
+- **Jordan K.** — a provider call (Dr. Lee) covering three patients. Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. Items the system is unsure about must have their patient confirmed before they can be approved.

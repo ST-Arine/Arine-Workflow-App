@@ -4,6 +4,7 @@ import { Check, X, Circle, CheckCircle2, PhoneOff, Play, Pause, Plus, AlertCircl
 import { CALL_SCRIPT, PHARMACISTS } from "../data/mock";
 import { Badge, Panel, PrimaryButton, GhostButton, TextLink, Modal, IconToggle } from "../components/ui";
 import { ListeningWave } from "../components/ListeningWave";
+import { PatientHeader, PatientPicker, groupByPatient } from "../components/patients";
 
 export function CallStep({ engagement, agenda, setAgenda, observations, setObservations, onEndCall }) {
   const script = CALL_SCRIPT[engagement.id] || [];
@@ -18,10 +19,12 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
   const [swapActive, setSwapActive] = useState("customer");
   const [addingObs, setAddingObs] = useState(false);
   const [obsDraft, setObsDraft] = useState("");
+  const patients = engagement.patients; // provider calls cover several patients: every observation belongs to one
+  const [obsPatient, setObsPatient] = useState(patients ? patients[0].id : null);
 
   function addManualObservation() {
     if (!obsDraft.trim()) return;
-    setObservations((prev) => [...prev, { id: `custom-${Date.now()}`, text: obsDraft.trim(), custom: true }]);
+    setObservations((prev) => [...prev, { id: `custom-${Date.now()}`, text: obsDraft.trim(), custom: true, patientId: patients ? obsPatient : undefined }]);
     setObsDraft("");
     setAddingObs(false);
   }
@@ -56,7 +59,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
       setPendingMatch(line.match);
     }
     if (line.confirm) setAgenda((prev) => prev.map((a) => (a.id === line.confirm ? { ...a, status: "confirmed" } : a)));
-    if (line.observation) setObservations((prev) => [...prev, { id: `o${prev.length}-${Date.now()}`, text: line.observation, blockedFax: line.blockedFax || null }]);
+    if (line.observation) setObservations((prev) => [...prev, { id: `o${prev.length}-${Date.now()}`, text: line.observation, blockedFax: line.blockedFax || null, patientId: line.patientId, needsPatientCheck: line.needsPatientCheck }]);
     setLineIndex((i) => i + 1);
   }
   function resolveMatch(decision) {
@@ -67,6 +70,10 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
   function toggleAgendaItem(id) {
     setAgenda((prev) => prev.map((a) => (a.id === id ? { ...a, status: a.status === "confirmed" ? "pending" : "confirmed" } : a)));
     if (pendingMatch === id) setPendingMatch(null);
+  }
+  // Picking a patient (even the one already shown) confirms it
+  function setObservationPatient(id, patientId) {
+    setObservations((prev) => prev.map((o) => (o.id === id ? { ...o, patientId, needsPatientCheck: false } : o)));
   }
   function discardObservation(id) {
     setObservations((prev) => prev.filter((o) => o.id !== id));
@@ -80,38 +87,58 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
         <div className="w-full md:w-64 flex-shrink-0 flex flex-col gap-4">
           <Panel>
             <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-3 uppercase tracking-wide">Agenda</div>
-            <ul className="flex flex-col gap-2">
-              {agenda.map((a) => (
-                <li key={a.id}>
-                  <button
-                    role="checkbox" aria-checked={a.status === "confirmed"} onClick={() => toggleAgendaItem(a.id)}
-                    title={a.status === "confirmed" ? "Mark as not covered" : "Mark as covered"}
-                    className="w-full flex items-start gap-2 text-left rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-white/10"
-                  >
-                    {a.status === "confirmed" ? <span key={a.id + "-c"} className="pop-in" style={{ display: "inline-flex" }}><CheckCircle2 size={15} color={C.green} /></span> : <Circle size={15} color={C.inkFaint} />}
-                    <span style={{ ...sans, color: a.status === "confirmed" ? C.ink : C.inkMuted, transition: "color 0.4s ease" }} className="text-sm">{a.label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {(() => {
+              const renderRow = (a) => (
+                  <li key={a.id}>
+                    <button
+                      role="checkbox" aria-checked={a.status === "confirmed"} onClick={() => toggleAgendaItem(a.id)}
+                      title={a.status === "confirmed" ? "Mark as not covered" : "Mark as covered"}
+                      className="w-full flex items-start gap-2 text-left rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-white/10"
+                    >
+                      {a.status === "confirmed" ? <span key={a.id + "-c"} className="pop-in" style={{ display: "inline-flex" }}><CheckCircle2 size={15} color={C.green} /></span> : <Circle size={15} color={C.inkFaint} />}
+                      <span style={{ ...sans, color: a.status === "confirmed" ? C.ink : C.inkMuted, transition: "color 0.4s ease" }} className="text-sm">{a.label}</span>
+                    </button>
+                  </li>
+              );
+              return patients ? (
+                <div className="flex flex-col gap-3">
+                  {groupByPatient(agenda, patients).map((g) => (
+                    <div key={g.patient.id}>
+                      <PatientHeader patient={g.patient} compact />
+                      <ul className="flex flex-col gap-1">{g.items.map(renderRow)}</ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="flex flex-col gap-2">{agenda.map(renderRow)}</ul>
+              );
+            })()}
 
             <div style={{ borderTop: `1px solid ${C.border}` }} className="mt-4 pt-4">
               <ListeningWave muted={muted} onHold={onHold} />
               <ul className="flex flex-col gap-2 mb-2">
                 {observations.map((o) => (
-                  <li key={o.id} className="fade-in flex items-start gap-2 p-2 rounded-lg" style={{ background: "rgba(255,255,255,0.06)" }}>
-                    <p style={{ ...sans, color: C.ink }} className="text-sm flex-1">{o.text}</p>
-                    <button
-                      onClick={() => discardObservation(o.id)} aria-label={`Discard observation: ${o.text}`} title="Discard"
-                      className="p-1 -m-1 rounded-full hover:bg-white/10 flex-shrink-0"
-                    >
-                      <X size={14} color={C.inkMuted} />
-                    </button>
+                  <li key={o.id} className="fade-in p-2 rounded-lg" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <div className="flex items-start gap-2">
+                      <p style={{ ...sans, color: C.ink }} className="text-sm flex-1">{o.text}</p>
+                      <button
+                        onClick={() => discardObservation(o.id)} aria-label={`Discard observation: ${o.text}`} title="Discard"
+                        className="p-1 -m-1 rounded-full hover:bg-white/10 flex-shrink-0"
+                      >
+                        <X size={14} color={C.inkMuted} />
+                      </button>
+                    </div>
+                    {patients && (
+                      <div className="mt-2">
+                        <PatientPicker patients={patients} value={o.patientId} needsCheck={o.needsPatientCheck} onChange={(pid) => setObservationPatient(o.id, pid)} />
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
               {addingObs ? (
                 <div className="fade-in flex flex-col gap-2">
+                  {patients && <div><PatientPicker patients={patients} value={obsPatient} onChange={setObsPatient} /></div>}
                   <textarea
                     autoFocus value={obsDraft} onChange={(e) => setObsDraft(e.target.value)} placeholder="What did you notice?"
                     style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm p-2 border rounded-sm" rows={2}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ACCOUNTS, QUEUE, FOLLOWUP_RULES } from "./data/mock";
+import { ACCOUNTS, QUEUE, USERS, FOLLOWUP_RULES } from "./data/mock";
 import { TopBar } from "./components/TopBar";
 import { RecapTrail } from "./components/RecapTrail";
 import { WelcomeScreen } from "./screens/WelcomeScreen";
@@ -28,20 +28,33 @@ export default function WorkflowAssistant() {
   const [followUps, setFollowUps] = useState([]);
   const [completedCount, setCompletedCount] = useState(0);
   const [recap, setRecap] = useState([]);
+  const [userId, setUserId] = useState(USERS[0].id);
+  const user = USERS.find((u) => u.id === userId);
+  const otherUser = USERS.find((u) => u.id !== userId);
+  const queue = user.queue.map((id) => QUEUE.find((e) => e.id === id));
+
+  // Demo helper: swap to the other caller, whose queue holds a different kind of engagement. Starts them fresh.
+  function switchUser() {
+    setUserId(otherUser.id);
+    setStatus("available");
+    setPhase("welcome");
+    setCandidateIdx(0);
+    setEngagement(null); setAgenda([]); setObservations([]); setFollowUps([]); setRecap([]); setCompletedCount(0);
+  }
 
   function startSearch() {
     setRecap([]);
     setCandidateIdx(0);
     setPhase("loading");
-    setTimeout(() => { setEngagement(QUEUE[0]); setPhase("found"); }, 2200);
+    setTimeout(() => { setEngagement(queue[0]); setPhase("found"); }, 2200);
   }
   function showAnother() {
-    const next = (candidateIdx + 1) % QUEUE.length;
+    const next = (candidateIdx + 1) % queue.length;
     setCandidateIdx(next);
-    setEngagement(QUEUE[next]);
+    setEngagement(queue[next]);
   }
   function goPrep() {
-    setAgenda(engagement.tasks.map((t) => ({ id: t.id, label: t.label, status: "pending", source: "task" })));
+    setAgenda(engagement.tasks.map((t) => ({ id: t.id, label: t.label, status: "pending", source: "task", patientId: t.patientId })));
     setRecap((r) => [...r, `Found ${engagement.name} — ${engagement.priority.toLowerCase()} priority, ${engagement.reason.toLowerCase()}`]);
     setPhase("prep");
   }
@@ -54,16 +67,16 @@ export default function WorkflowAssistant() {
   function endCall() {
     const confirmedIds = new Set(agenda.filter((a) => a.status === "confirmed").map((a) => a.id));
     const generated = [];
-    agenda.forEach((a) => { if (confirmedIds.has(a.id) && FOLLOWUP_RULES[a.id]) { const r = FOLLOWUP_RULES[a.id]; generated.push({ id: `f-${a.id}`, type: r.type, label: r.label, recipient: r.recipient, status: "pending" }); } });
+    agenda.forEach((a) => { if (confirmedIds.has(a.id) && FOLLOWUP_RULES[a.id]) { const r = FOLLOWUP_RULES[a.id]; generated.push({ id: `f-${a.id}`, type: r.type, label: r.label, recipient: r.recipient, status: "pending", patientId: a.patientId }); } });
     observations.forEach((o) => {
       if (o.blockedFax) {
         generated.push({
           id: `f-${o.id}`, type: "fax", label: o.blockedFax.label, recipient: o.blockedFax.entityName,
-          status: "blocked",
+          status: "blocked", patientId: o.patientId,
           precondition: { component: "add_care_team_member", data: { entityName: o.blockedFax.entityName, role: o.blockedFax.role } },
         });
       } else {
-        generated.push({ id: `f-${o.id}`, type: "data-entry", label: `Update record: ${o.text}`, status: "pending" });
+        generated.push({ id: `f-${o.id}`, type: "data-entry", label: `Update record: ${o.text}`, status: "pending", patientId: o.patientId, needsPatientCheck: o.needsPatientCheck });
       }
     });
     setFollowUps(generated);
@@ -105,7 +118,7 @@ export default function WorkflowAssistant() {
       {phase === "prep" && engagement && <PrepStep engagement={engagement} agenda={agenda} setAgenda={setAgenda} onBack={() => setPhase("found")} onStartCall={startCall} />}
       {phase === "call" && engagement && <CallStep engagement={engagement} agenda={agenda} setAgenda={setAgenda} observations={observations} setObservations={setObservations} onEndCall={endCall} />}
       {phase === "review" && <ReviewStep engagement={engagement} agenda={agenda} followUps={followUps} setFollowUps={setFollowUps} onBack={() => setPhase("call")} onProceed={proceedToFax} />}
-      {phase === "fax" && <FaxStep followUps={followUps} setFollowUps={setFollowUps} onFinish={finishEngagement} />}
+      {phase === "fax" && <FaxStep engagement={engagement} followUps={followUps} setFollowUps={setFollowUps} onFinish={finishEngagement} />}
     </div>
   );
 
@@ -124,9 +137,9 @@ export default function WorkflowAssistant() {
   return (
     <AppShell
       navItems={CALLER_NAV} activeId="workflow" onSelect={() => {}} background={background}
-      profileProps={{ name: "Dana R.", status, onGoBreak: goOnBreak, onBackFromBreak: backFromBreak, role, onToggleRole: toggleRole }}
+      profileProps={{ name: user.name, status, onGoBreak: goOnBreak, onBackFromBreak: backFromBreak, role, onToggleRole: toggleRole, onSwitchUser: switchUser, otherUserName: otherUser.name }}
     >
-      <TopBar completedCount={completedCount} account={account} setAccount={setAccount} />
+      <TopBar userName={user.first} completedCount={completedCount} account={account} setAccount={setAccount} />
       {journey}
     </AppShell>
   );
