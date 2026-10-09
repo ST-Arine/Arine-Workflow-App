@@ -50,8 +50,9 @@ export const QUEUE = [
     aiAgendaSuggestions: [],
   },
   {
-    // Provider call: one conversation covers several patients, so tasks, observations and follow-ups each belong to a patient.
-    id: "e4", kind: "provider", name: "Dr. Lee", practice: "Northside Family Clinic", priority: "High", reason: "3 patients with open questions for the provider",
+    // Provider call: one conversation with the provider, several patients to discuss as separate topics (not a group call).
+    // Tasks, observations and follow-ups each belong to a patient.
+    id: "e4", kind: "provider", name: "Dr. Lee", practice: "Northside Family Clinic", priority: "High", reason: "3 patients to discuss with the provider",
     phone: "(555) 330-4182", insurance: null, allergies: null, medications: null,
     patients: [
       { id: "p1", name: "Maria Chen", dob: "Apr 12, 1958", mrn: "MRN-88213" },

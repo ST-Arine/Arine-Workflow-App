@@ -19,7 +19,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
   const [swapActive, setSwapActive] = useState("customer");
   const [addingObs, setAddingObs] = useState(false);
   const [obsDraft, setObsDraft] = useState("");
-  const patients = engagement.patients; // provider calls cover several patients: every observation belongs to one
+  const patients = engagement.patients; // provider calls: several patients are discussed as separate topics, and every observation belongs to one
   const [obsPatient, setObsPatient] = useState(patients ? patients[0].id : null);
 
   function addManualObservation() {
