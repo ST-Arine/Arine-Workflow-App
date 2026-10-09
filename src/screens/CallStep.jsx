@@ -96,7 +96,8 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
             </ul>
 
             <div style={{ borderTop: `1px solid ${C.border}` }} className="mt-4 pt-4">
-              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-3 uppercase tracking-wide">New observations</div>
+              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">New observations</div>
+              <ListeningWave muted={muted} onHold={onHold} />
               {observations.length === 0 && !addingObs && <p style={{ ...sans, color: C.inkMuted }} className="text-sm mb-2">None yet.</p>}
               <ul className="flex flex-col gap-2 mb-2">
                 {observations.map((o) => (
@@ -127,7 +128,6 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
               )}
             </div>
 
-            <ListeningWave muted={muted} onHold={onHold} />
           </Panel>
           {transferState !== "idle" && (
             <Panel>
