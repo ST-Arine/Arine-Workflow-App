@@ -22,7 +22,7 @@ export function PatientPicker({ patients, value, onChange, needsCheck = false, d
   };
   const content = () => (
     <>
-      {needsCheck ? <AlertCircle size={11} /> : <User size={11} />} {current ? current.name : "Choose patient"}
+      {needsCheck ? <AlertCircle size={11} /> : <User size={11} />} {current ? current.name : "Select Patient"}
       {!disabled && <ChevronDown size={11} />}
     </>
   );
@@ -47,14 +47,14 @@ export function PatientPicker({ patients, value, onChange, needsCheck = false, d
           ))}
         </>
       </Dropdown>
-      {needsCheck && caption && <span style={{ ...sans, color: C.amber }} className="text-[11px] pl-1">Confirm patient</span>}
+      {needsCheck && caption && current && <span style={{ ...sans, color: C.amber }} className="text-[11px] pl-1">Confirm patient</span>}
     </span>
   );
 }
 
 // Section heading for a patient's group of items: name, DOB / MRN and an item count.
 export function PatientHeader({ patient, count, compact = false }) {
-  const initials = patient.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  const initials = patient.id === "none" ? "?" : patient.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   return (
     <div className={`flex items-center gap-2 ${compact ? "mb-1.5" : "mb-2"}`}>
       <span
