@@ -13,7 +13,7 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
   const [addingItem, setAddingItem] = useState(false);
   const [newItemLabel, setNewItemLabel] = useState("");
   const stillSuggested = engagement.aiAgendaSuggestions.filter((s) => !agenda.find((a) => a.id === s.id));
-  const patients = engagement.patients; // provider calls cover several patients
+  const patients = engagement.patients; // provider calls: one call, several patients to discuss as separate topics
   const [newItemPatient, setNewItemPatient] = useState(patients ? patients[0].id : null);
 
   function addOwnItem() {
@@ -44,7 +44,7 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
 
           {patients && (
             <Panel>
-              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">Patients on this call</div>
+              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">Patients to discuss</div>
               <ul className="flex flex-col gap-2">
                 {patients.map((pt) => (
                   <li key={pt.id}>

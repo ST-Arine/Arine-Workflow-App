@@ -50,8 +50,9 @@ export const QUEUE = [
     aiAgendaSuggestions: [],
   },
   {
-    // Provider call: one conversation covers several patients, so tasks, observations and follow-ups each belong to a patient.
-    id: "e4", kind: "provider", name: "Dr. Lee", practice: "Northside Family Clinic", priority: "High", reason: "3 patients with open questions for the provider",
+    // Provider call: one conversation with the provider, several patients to discuss as separate topics (not a group call).
+    // Tasks, observations and follow-ups each belong to a patient.
+    id: "e4", kind: "provider", name: "Dr. Lee", practice: "Northside Family Clinic", priority: "High", reason: "3 patients to discuss with the provider",
     phone: "(555) 330-4182", insurance: null, allergies: null, medications: null,
     patients: [
       { id: "p1", name: "Maria Chen", dob: "Apr 12, 1958", mrn: "MRN-88213" },
@@ -103,7 +104,7 @@ CALL_SCRIPT.e4 = [
   { speaker: "Dana", text: "And Helen Park is due for a renewed Lisinopril prescription.", match: "d3" },
   { speaker: "Dr. Lee", text: "I'll send that over today.", confirm: "d3" },
   { speaker: "Dr. Lee", text: "Oh, and one of them mentioned a new sulfa allergy — please get that on file.",
-    observation: "New sulfa allergy reported — needs to be added to the record.", patientId: "p2", needsPatientCheck: true },
+    observation: "New sulfa allergy reported — needs to be added to the record.", patientId: null, needsPatientCheck: true }, // system can't tell who: no guess
   { speaker: "Dr. Lee", text: "Also, please fax me Maria's latest A1c results when you have them.",
     observation: "Provider asked for the latest A1c results to be faxed to the clinic.", patientId: "p1" },
 ];
