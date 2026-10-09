@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { C, serif, sans } from "../theme";
 import { Check, Building, Settings, LogOut, Users, User } from "./icons";
 import { ACCOUNTS } from "../data/mock";
@@ -18,43 +19,77 @@ export const dropdownPanelStyle = {
   boxShadow: "0 20px 44px -16px rgba(0,0,0,0.5)", zIndex: 50, padding: 6,
 };
 
-// Generic, reusable dropdown: measures the trigger's position on open and
-// flips left/right alignment automatically so the panel never runs off-screen,
-// regardless of where in the layout it's mounted.
-export function Dropdown({ trigger, panelWidth = 220, placement = "below", fullWidth = false, children }) {
+// Generic, reusable dropdown. The panel is rendered in a portal on <body>, so it is positioned against the viewport
+// no matter where the trigger lives (cards use backdrop-filter, which would otherwise trap position: fixed children).
+// It measures itself and the trigger on open, then: aligns to the trigger (align: "left" | "right"), opens below by
+// default but flips above when there isn't room, and is clamped inside the viewport.
+// placement "side" opens beside the trigger and grows upward (for triggers pinned to the bottom-left corner).
+export function Dropdown({ trigger, panelWidth = 220, placement = "below", align = "left", fullWidth = false, children }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
   const triggerRef = useRef(null);
+  const panelRef = useRef(null);
   const [pos, setPos] = useState(null);
-  useClickOutside(wrapperRef, () => setOpen(false));
 
-  function computePos() {
-    if (!triggerRef.current) return { top: 0, left: 0 };
+  function place() {
+    if (!triggerRef.current || !panelRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const margin = 12;
-    // "side": open to the right of the trigger, growing upward (for triggers pinned to the bottom-left corner)
-    if (placement === "side") return { bottom: window.innerHeight - rect.bottom, left: rect.right + 8 };
-    let left = rect.left;
-    if (left + panelWidth > window.innerWidth - margin) left = rect.right - panelWidth;
-    if (left < margin) left = margin;
-    return { top: rect.bottom + 8, left };
+    const w = panelRef.current.offsetWidth, h = panelRef.current.offsetHeight;
+    const margin = 12, gap = 8, vw = window.innerWidth, vh = window.innerHeight;
+    let left, top;
+    if (placement === "side") {
+      left = rect.right + gap;
+      if (left + w > vw - margin) left = rect.left - gap - w;
+      top = rect.bottom - h;
+    } else {
+      left = align === "right" ? rect.right - w : rect.left;
+      const roomBelow = vh - rect.bottom - gap - margin;
+      const roomAbove = rect.top - gap - margin;
+      top = h <= roomBelow || roomBelow >= roomAbove ? rect.bottom + gap : rect.top - gap - h;
+    }
+    left = Math.min(Math.max(left, margin), Math.max(margin, vw - w - margin));
+    top = Math.min(Math.max(top, margin), Math.max(margin, vh - h - margin));
+    setPos({ top, left });
   }
 
-  function toggle() {
-    if (open) { setOpen(false); return; }
-    setPos(computePos()); // measure before showing, so it never flashes at the wrong spot
-    setOpen(true);
-  }
+  // Measure after the panel mounts (still hidden) and before it paints, so it never flashes in the wrong spot.
+  useLayoutEffect(() => {
+    if (open) place(); else setPos(null);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    const onMouseDown = (e) => {
+      if (wrapperRef.current?.contains(e.target) || panelRef.current?.contains(e.target)) return;
+      close();
+    };
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true); // capture: also fires for scrolling containers
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open]);
 
   return (
     <div ref={wrapperRef} style={{ display: fullWidth ? "block" : "inline-block" }}>
       <span ref={triggerRef} style={{ display: fullWidth ? "block" : "inline-block" }}>
-        {trigger({ open, toggle })}
+        {trigger({ open, toggle: () => setOpen((o) => !o) })}
       </span>
-      {open && pos && (
-        <div className="fade-in" style={{ ...dropdownPanelStyle, top: pos.top, bottom: pos.bottom, left: pos.left, minWidth: panelWidth }} onClick={() => setOpen(false)}>
+      {open && createPortal(
+        <div
+          ref={panelRef} className="fade-in" onClick={() => setOpen(false)}
+          style={{ ...dropdownPanelStyle, minWidth: panelWidth, top: pos ? pos.top : 0, left: pos ? pos.left : 0, visibility: pos ? "visible" : "hidden" }}
+        >
           {children}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
