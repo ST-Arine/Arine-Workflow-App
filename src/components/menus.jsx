@@ -215,8 +215,7 @@ export function ProfileMenu({ name, status, onGoBreak, onBackFromBreak, onPrefer
             <div style={{ ...sans, color: C.inkFaint }} className="text-xs px-3 py-1 uppercase tracking-wide">Switch user</div>
             {users.map((u) => (
               <DropdownItem key={u.id} icon={u.id === activeUserId ? Check : User} onClick={() => onSelectUser(u.id)}>
-                <span style={{ color: u.id === activeUserId ? C.primary : "#FFFFFF" }}>{u.name}</span>
-                <span style={{ color: C.inkFaint, marginLeft: "auto" }} className="text-xs font-normal capitalize">{u.role}</span>
+                <span style={{ color: u.id === activeUserId ? C.primary : "#FFFFFF" }}>{u.label}</span>
               </DropdownItem>
             ))}
             <div style={{ borderTop: `1px solid ${C.border}` }} className="my-1" />

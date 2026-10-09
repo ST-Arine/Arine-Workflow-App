@@ -25,6 +25,6 @@ npm run lint     # static checks
 
 The profile menu (bottom-left of the nav) has a **Switch user** list that is identical in every view, including the manager view:
 
-- **Dana R. (Caller)** — patient, pharmacy and patient-flag engagements (single-patient calls).
-- **Jordan K.** — a provider call (Dr. Lee) covering three patients. Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. Items the system is unsure about must have their patient confirmed before they can be approved.
-- **Dana R. (Manager)** — the admin view. Switching between a caller and the manager keeps the caller's in-progress engagement; switching to a different caller starts fresh.
+- **Dana - patient flow** — patient, pharmacy and patient-flag engagements (single-patient calls).
+- **Jordan - provider flow** — a provider call (Dr. Lee) covering three patients. Observations and follow-ups each belong to a patient, are grouped by patient in Review and Fax, and can be re-assigned before anything is sent. Items the system is unsure about must have their patient confirmed before they can be approved.
+- **Sally - manager/lead view** — the admin view. Switching between a caller and the manager keeps the caller's in-progress engagement; switching to a different caller starts fresh.
