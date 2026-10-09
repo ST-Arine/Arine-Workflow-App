@@ -33,6 +33,7 @@ export function PatientPicker({ patients, value, onChange, needsCheck = false, d
     <span className="inline-flex flex-col items-start gap-1">
       <Dropdown
         panelWidth={220}
+        align="right"
         trigger={({ toggle }) => (
           <button onClick={toggle} title="Change patient" aria-label="Change patient" style={chipStyle} className="text-xs font-semibold px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 whitespace-nowrap">
             {content()}
