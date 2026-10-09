@@ -16,3 +16,7 @@ npm run lint     # static checks
 - `src/components/` — shared UI (icons, buttons, menus, top bar)
 - `src/screens/` — one file per workflow step, plus the manager admin shell
 - `src/WorkflowAssistant.jsx` — top-level state machine wiring the steps together
+
+## UI conventions
+
+- **Buttons:** primary on the right, secondary on the left. Secondary buttons match the primary's shape but are outline-only with no fill (`<GhostButton large>`). A lone primary button also goes on the right.

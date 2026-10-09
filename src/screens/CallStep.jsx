@@ -221,8 +221,8 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
                 {transferState === "connected" && (
                   <GhostButton onClick={() => setSwapActive((s) => (s === "customer" ? "other" : "customer"))}>Swap</GhostButton>
                 )}
-                {transferState === "connected" && <PrimaryButton onClick={joinConference}>Join</PrimaryButton>}
                 <GhostButton tone="danger" onClick={leaveCall}>Leave</GhostButton>
+                {transferState === "connected" && <PrimaryButton onClick={joinConference}>Join</PrimaryButton>}
               </div>
             </div>
           )}
@@ -230,7 +230,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
           {transferState === "done" && (
             <div>
               <p style={{ ...sans, color: C.green }} className="text-sm font-medium flex items-center gap-1.5 mb-4"><CheckCircle2 size={14} /> Transferred to Dr. Alvarez</p>
-              <PrimaryButton onClick={() => setTransferModalOpen(false)}>Close</PrimaryButton>
+              <div className="flex justify-end"><PrimaryButton onClick={() => setTransferModalOpen(false)}>Close</PrimaryButton></div>
             </div>
           )}
         </Modal>
