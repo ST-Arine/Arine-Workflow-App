@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { C, serif, sans } from "../theme";
-import { Check, X, Circle, CheckCircle2, PhoneOff, Play, Pause, Plus, AlertCircle, ArrowLeftRight, Mic, MicOff, Dialpad, User } from "../components/icons";
+import { Check, X, Circle, CheckCircle2, PhoneOff, Play, Pause, Plus, AlertCircle, ArrowLeftRight, Mic, MicOff, Dialpad } from "../components/icons";
 import { CALL_SCRIPT, PHARMACISTS } from "../data/mock";
 import { Badge, Panel, PrimaryButton, GhostButton, TextLink, Modal, IconToggle } from "../components/ui";
+import { ListeningWave } from "../components/ListeningWave";
 
 export function CallStep({ engagement, agenda, setAgenda, observations, setObservations, onEndCall }) {
   const script = CALL_SCRIPT[engagement.id] || [];
@@ -20,7 +21,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
 
   function addManualObservation() {
     if (!obsDraft.trim()) return;
-    setObservations((prev) => [...prev, { id: `custom-${Date.now()}`, text: obsDraft.trim(), status: "confirmed", custom: true }]);
+    setObservations((prev) => [...prev, { id: `custom-${Date.now()}`, text: obsDraft.trim(), custom: true }]);
     setObsDraft("");
     setAddingObs(false);
   }
@@ -55,7 +56,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
       setPendingMatch(line.match);
     }
     if (line.confirm) setAgenda((prev) => prev.map((a) => (a.id === line.confirm ? { ...a, status: "confirmed" } : a)));
-    if (line.observation) setObservations((prev) => [...prev, { id: `o${prev.length}-${Date.now()}`, text: line.observation, status: "suggested", blockedFax: line.blockedFax || null }]);
+    if (line.observation) setObservations((prev) => [...prev, { id: `o${prev.length}-${Date.now()}`, text: line.observation, blockedFax: line.blockedFax || null }]);
     setLineIndex((i) => i + 1);
   }
   function resolveMatch(decision) {
@@ -67,8 +68,8 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
     setAgenda((prev) => prev.map((a) => (a.id === id ? { ...a, status: a.status === "confirmed" ? "pending" : "confirmed" } : a)));
     if (pendingMatch === id) setPendingMatch(null);
   }
-  function resolveObservation(id, decision) {
-    setObservations((prev) => decision === "discard" ? prev.filter((o) => o.id !== id) : prev.map((o) => (o.id === id ? { ...o, status: "confirmed" } : o)));
+  function discardObservation(id) {
+    setObservations((prev) => prev.filter((o) => o.id !== id));
   }
   const noScript = script.length === 0;
 
@@ -93,42 +94,40 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
                 </li>
               ))}
             </ul>
-          </Panel>
-          <Panel>
-            <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-3 uppercase tracking-wide">New observations</div>
-            {observations.length === 0 && !addingObs && <p style={{ ...sans, color: C.inkMuted }} className="text-sm">None yet.</p>}
-            <ul className="flex flex-col gap-2 mb-2">
-              {observations.map((o) => (
-                <li key={o.id} style={{ background: o.status === "suggested" ? C.amberSoft : C.greenSoft }} className="p-2 rounded-sm">
-                  <p style={{ ...sans, color: C.ink }} className="text-sm mb-1.5">{o.text}</p>
-                  {o.status === "suggested" ? (
-                    <div className="flex gap-2">
-                      <button onClick={() => resolveObservation(o.id, "confirm")} style={{ ...sans, color: C.green }} className="text-xs font-medium py-1.5 -my-1.5">Keep</button>
-                      <button onClick={() => resolveObservation(o.id, "discard")} style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium py-1.5 -my-1.5">Discard</button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Badge tone="green">Confirmed</Badge>
-                      {o.custom && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-            {addingObs ? (
-              <div className="fade-in flex flex-col gap-2">
-                <textarea
-                  autoFocus value={obsDraft} onChange={(e) => setObsDraft(e.target.value)} placeholder="What did you notice?"
-                  style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm p-2 border rounded-sm" rows={2}
-                />
-                <div className="flex items-center gap-2">
-                  <GhostButton onClick={addManualObservation}><Check size={13} color={C.green} /> Add</GhostButton>
-                  <GhostButton onClick={() => { setAddingObs(false); setObsDraft(""); }}>Cancel</GhostButton>
+
+            <div style={{ borderTop: `1px solid ${C.border}` }} className="mt-4 pt-4">
+              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-3 uppercase tracking-wide">New observations</div>
+              {observations.length === 0 && !addingObs && <p style={{ ...sans, color: C.inkMuted }} className="text-sm mb-2">None yet.</p>}
+              <ul className="flex flex-col gap-2 mb-2">
+                {observations.map((o) => (
+                  <li key={o.id} className="fade-in flex items-start gap-2 p-2 rounded-lg" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <p style={{ ...sans, color: C.ink }} className="text-sm flex-1">{o.text}</p>
+                    <button
+                      onClick={() => discardObservation(o.id)} aria-label={`Discard observation: ${o.text}`} title="Discard"
+                      className="p-1 -m-1 rounded-full hover:bg-white/10 flex-shrink-0"
+                    >
+                      <X size={14} color={C.inkMuted} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {addingObs ? (
+                <div className="fade-in flex flex-col gap-2">
+                  <textarea
+                    autoFocus value={obsDraft} onChange={(e) => setObsDraft(e.target.value)} placeholder="What did you notice?"
+                    style={{ ...sans, borderColor: C.border, color: "#FFFFFF" }} className="w-full text-sm p-2 border rounded-sm" rows={2}
+                  />
+                  <div className="flex items-center gap-2">
+                    <GhostButton onClick={() => { setAddingObs(false); setObsDraft(""); }}>Cancel</GhostButton>
+                    <GhostButton onClick={addManualObservation}><Check size={13} color={C.green} /> Add</GhostButton>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <GhostButton onClick={() => setAddingObs(true)}><Plus size={13} /> Add observation</GhostButton>
-            )}
+              ) : (
+                <GhostButton onClick={() => setAddingObs(true)}><Plus size={13} /> Add observation</GhostButton>
+              )}
+            </div>
+
+            <ListeningWave muted={muted} onHold={onHold} />
           </Panel>
           {transferState !== "idle" && (
             <Panel>
