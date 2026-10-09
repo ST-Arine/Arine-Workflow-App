@@ -96,9 +96,7 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
             </ul>
 
             <div style={{ borderTop: `1px solid ${C.border}` }} className="mt-4 pt-4">
-              <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-2 uppercase tracking-wide">New observations</div>
               <ListeningWave muted={muted} onHold={onHold} />
-              {observations.length === 0 && !addingObs && <p style={{ ...sans, color: C.inkMuted }} className="text-sm mb-2">None yet.</p>}
               <ul className="flex flex-col gap-2 mb-2">
                 {observations.map((o) => (
                   <li key={o.id} className="fade-in flex items-start gap-2 p-2 rounded-lg" style={{ background: "rgba(255,255,255,0.06)" }}>

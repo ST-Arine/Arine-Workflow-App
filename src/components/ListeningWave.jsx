@@ -13,12 +13,12 @@ const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
   };
 });
 
-// Subtle "listening" indicator for the live call. Drifts gently while the line is open; still when muted or on hold.
+// Subtle, centered "listening" indicator for the live call. Drifts gently while the line is open; still when muted or on hold.
 export function ListeningWave({ muted = false, onHold = false }) {
   const active = !muted && !onHold;
-  const label = onHold ? "On hold" : muted ? "Muted" : "Listening";
+  const label = onHold ? "On hold" : muted ? "Muted" : "Listening for new observations";
   return (
-    <div role="status" aria-live="polite" className="flex items-center gap-2 mb-3" style={{ height: 14 }}>
+    <div role="status" aria-live="polite" className="flex flex-col items-center gap-1.5 mb-3">
       <div className="flex items-center gap-[2px]" style={{ height: 12 }} aria-hidden="true">
         {bars.map((b, i) => (
           <span
