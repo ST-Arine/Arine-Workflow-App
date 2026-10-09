@@ -62,6 +62,11 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
     if (decision === "confirm") setAgenda((prev) => prev.map((a) => (a.id === pendingMatch ? { ...a, status: "confirmed" } : a)));
     setPendingMatch(null);
   }
+  // Manual override: the user can check off (or un-check) any agenda item, independent of the transcript matching
+  function toggleAgendaItem(id) {
+    setAgenda((prev) => prev.map((a) => (a.id === id ? { ...a, status: a.status === "confirmed" ? "pending" : "confirmed" } : a)));
+    if (pendingMatch === id) setPendingMatch(null);
+  }
   function resolveObservation(id, decision) {
     setObservations((prev) => decision === "discard" ? prev.filter((o) => o.id !== id) : prev.map((o) => (o.id === id ? { ...o, status: "confirmed" } : o)));
   }
@@ -76,9 +81,15 @@ export function CallStep({ engagement, agenda, setAgenda, observations, setObser
             <div style={{ ...sans, color: C.inkMuted }} className="text-xs font-medium mb-3 uppercase tracking-wide">Agenda</div>
             <ul className="flex flex-col gap-2">
               {agenda.map((a) => (
-                <li key={a.id} className="flex items-start gap-2">
-                  {a.status === "confirmed" ? <span key={a.id + "-c"} className="pop-in" style={{ display: "inline-flex" }}><CheckCircle2 size={15} color={C.green} /></span> : <Circle size={15} color={C.border} />}
-                  <span style={{ ...sans, color: a.status === "confirmed" ? C.ink : C.inkMuted, transition: "color 0.4s ease" }} className="text-sm">{a.label}</span>
+                <li key={a.id}>
+                  <button
+                    role="checkbox" aria-checked={a.status === "confirmed"} onClick={() => toggleAgendaItem(a.id)}
+                    title={a.status === "confirmed" ? "Mark as not covered" : "Mark as covered"}
+                    className="w-full flex items-start gap-2 text-left rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-white/10"
+                  >
+                    {a.status === "confirmed" ? <span key={a.id + "-c"} className="pop-in" style={{ display: "inline-flex" }}><CheckCircle2 size={15} color={C.green} /></span> : <Circle size={15} color={C.inkFaint} />}
+                    <span style={{ ...sans, color: a.status === "confirmed" ? C.ink : C.inkMuted, transition: "color 0.4s ease" }} className="text-sm">{a.label}</span>
+                  </button>
                 </li>
               ))}
             </ul>
