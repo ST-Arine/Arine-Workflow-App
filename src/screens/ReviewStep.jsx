@@ -21,7 +21,7 @@ export function AddFollowUpForm({ onAdd, onCancel, patients }) {
         {typeOptions.map((o) => (
           <button key={o.v} onClick={() => setType(o.v)}
             style={{ ...sans, background: type === o.v ? C.primarySoft : "transparent", color: type === o.v ? C.primary : C.inkMuted, borderColor: type === o.v ? C.primary : C.border }}
-            className="text-xs font-semibold px-3 py-1 rounded-full border">
+            className="btn-hover text-xs font-semibold px-3 py-1 rounded-full border">
             {o.l}
           </button>
         ))}
@@ -74,7 +74,7 @@ export function ReviewStep({ engagement, agenda, followUps, setFollowUps, onBack
         {f.recipient && <span style={{ ...sans, color: C.inkMuted }} className="text-xs">to {f.recipient}</span>}
         {f.custom && <Badge tone="primary"><User size={11} /> Added by you</Badge>}
         {patients && <PatientPicker patients={patients} value={f.patientId} needsCheck={f.needsPatientCheck} caption={false} onChange={(pid) => setPatient(f.id, pid)} />}
-        <button onClick={() => remove(f.id)} style={{ marginLeft: "auto" }} className="p-2 -m-2" title="Delete this item">
+        <button onClick={() => remove(f.id)} style={{ marginLeft: "auto" }} className="icon-btn p-2 -m-2" title="Delete this item">
           <Trash size={14} color={C.inkFaint} />
         </button>
       </div>
@@ -113,13 +113,13 @@ export function ReviewStep({ engagement, agenda, followUps, setFollowUps, onBack
               {f.status === "approved" && (
                 <>
                   <Badge tone="green">Approved</Badge>
-                  <button onClick={() => { setEditingId(f.id); setDraft(f.label); }} title="Edit" className="p-2 -m-2"><Pencil size={13} color={C.inkFaint} /></button>
+                  <button onClick={() => { setEditingId(f.id); setDraft(f.label); }} title="Edit" className="icon-btn p-2 -m-2"><Pencil size={13} color={C.inkFaint} /></button>
                 </>
               )}
               {f.status === "rejected" && (
                 <>
                   <Badge tone="muted">Skipped</Badge>
-                  <button onClick={() => decide(f.id, approveStatus(f))} title="Bring it back" className="p-2 -m-2"><RotateCcw size={13} color={C.inkFaint} /></button>
+                  <button onClick={() => decide(f.id, approveStatus(f))} title="Bring it back" className="icon-btn p-2 -m-2"><RotateCcw size={13} color={C.inkFaint} /></button>
                 </>
               )}
             </>

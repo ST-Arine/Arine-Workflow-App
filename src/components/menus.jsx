@@ -57,6 +57,21 @@ export function Dropdown({ trigger, panelWidth = 220, placement = "below", align
     if (open) place(); else setPos(null);
   }, [open]);
 
+  const focusTrigger = () => triggerRef.current?.querySelector("button")?.focus();
+
+  // Keyboard: opening moves focus into the menu so tabbing/arrow keys work from there (the panel lives in a portal at the end of the page)
+  useEffect(() => {
+    if (open && pos) panelRef.current?.querySelector("button:not(:disabled)")?.focus();
+  }, [open, pos !== null]);
+
+  function onPanelKeyDown(e) {
+    const items = [...panelRef.current.querySelectorAll("button:not(:disabled)")];
+    const i = items.indexOf(document.activeElement);
+    if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length]?.focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length]?.focus(); }
+    else if (e.key === "Tab") { setOpen(false); focusTrigger(); } // hand focus back to the trigger so Tab carries on from there
+  }
+
   useEffect(() => {
     if (!open) return;
     const close = () => setOpen(false);
@@ -64,7 +79,7 @@ export function Dropdown({ trigger, panelWidth = 220, placement = "below", align
       if (wrapperRef.current?.contains(e.target) || panelRef.current?.contains(e.target)) return;
       close();
     };
-    const onKey = (e) => { if (e.key === "Escape") close(); };
+    const onKey = (e) => { if (e.key === "Escape") { close(); focusTrigger(); } };
     document.addEventListener("mousedown", onMouseDown);
     document.addEventListener("keydown", onKey);
     window.addEventListener("resize", place);
@@ -84,7 +99,7 @@ export function Dropdown({ trigger, panelWidth = 220, placement = "below", align
       </span>
       {open && createPortal(
         <div
-          ref={panelRef} className="fade-in" onClick={() => setOpen(false)}
+          ref={panelRef} className="fade-in" role="menu" onKeyDown={onPanelKeyDown} onClick={() => { setOpen(false); focusTrigger(); }}
           style={{ ...dropdownPanelStyle, minWidth: panelWidth, top: pos ? pos.top : 0, left: pos ? pos.left : 0, visibility: pos ? "visible" : "hidden" }}
         >
           {children}
@@ -99,7 +114,7 @@ export function DropdownItem({ onClick, icon: IconC, tone = "default", children 
   const [hover, setHover] = useState(false);
   return (
     <button
-      onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      role="menuitem" onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{ ...sans, color: tone === "danger" ? C.danger : "#FFFFFF", background: hover ? "rgba(255,255,255,0.08)" : "transparent" }}
       className="w-full text-left text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium"
     >

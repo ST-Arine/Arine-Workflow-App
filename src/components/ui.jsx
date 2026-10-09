@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { C, serif, sans, AVATAR_COLORS } from "../theme";
 import { X, Sparkle } from "./icons";
 
@@ -76,13 +76,18 @@ export function Section({ label, children, last, first }) {
 
 // ---------- CALL ----------
 export function Modal({ onClose, children }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
   return (
     <div
       style={{ position: "fixed", inset: 0, background: "rgba(10,6,20,0.6)", backdropFilter: "blur(3px)", zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="rise-in glass" style={{ borderRadius: 20, padding: 24, width: 360, maxWidth: "100%", boxShadow: "0 24px 60px -16px rgba(0,0,0,0.5)", position: "relative" }}>
-        <button onClick={onClose} className="p-2" style={{ position: "absolute", top: 6, right: 6 }}>
+        <button onClick={onClose} autoFocus aria-label="Close" className="icon-btn p-2" style={{ position: "absolute", top: 6, right: 6 }}>
           <X size={16} color={C.inkMuted} />
         </button>
         {children}
@@ -95,7 +100,7 @@ export function IconToggle({ active, onClick, icon: IconC, label, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled}
       style={{ ...sans, background: active ? C.primarySoft : "transparent", color: active ? C.primary : C.inkMuted, borderColor: active ? C.primary : C.border }}
-      className="px-3 py-2 rounded-full border flex items-center gap-1.5 text-xs font-semibold disabled:opacity-40 flex-shrink-0 whitespace-nowrap">
+      className="btn-hover px-3 py-2 rounded-full border flex items-center gap-1.5 text-xs font-semibold disabled:opacity-40 flex-shrink-0 whitespace-nowrap">
       <IconC size={14} /> {label}
     </button>
   );
