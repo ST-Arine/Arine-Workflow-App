@@ -22,8 +22,7 @@ textarea:focus, input:focus, button:focus-visible { outline: 2px solid #FF8A3D; 
 @keyframes drift1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6%, 8%) scale(1.15); } }
 @keyframes drift2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-8%, -5%) scale(1.1); } }
 @keyframes drift3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -8%) scale(1.2); } }
-@keyframes listenWave { 0%, 100% { transform: scaleY(0.18); } 18% { transform: scaleY(0.95); } 38% { transform: scaleY(0.4); } 58% { transform: scaleY(1); } 80% { transform: scaleY(0.3); } }
-@keyframes listenGlow { 0%, 100% { opacity: 0.1; transform: scaleX(0.85); } 50% { opacity: 0.28; transform: scaleX(1.05); } }
+@keyframes listenWave { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(0.9); } }
 @keyframes barBounce { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
 .rise-in { animation: riseIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .fade-in { animation: fadeIn 0.35s ease-out both; }

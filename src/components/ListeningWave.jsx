@@ -1,53 +1,39 @@
 import { C, sans } from "../theme";
 
-const BAR_COUNT = 30;
+const BAR_COUNT = 14;
 
-// Soft bell-shaped envelope so the middle bars swing the highest, like a live audio waveform.
+// Small, quiet bars; the middle ones are a touch taller. Uneven durations keep them from moving in lockstep.
 const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
   const x = (i - (BAR_COUNT - 1) / 2) / (BAR_COUNT / 2);
-  const envelope = Math.exp(-x * x * 2.2);
+  const envelope = Math.exp(-x * x * 2);
   return {
-    height: 6 + Math.round(26 * envelope),
-    duration: 0.9 + ((i * 37) % 11) / 10,           // 0.9s–1.9s, uneven so bars drift in and out of phase
-    delay: -(((i * 53) % 17) / 10),                  // negative: already mid-motion on first paint
-    color: i < BAR_COUNT / 2 ? C.primary : C.green,
+    height: 5 + Math.round(7 * envelope),
+    duration: 1.8 + ((i * 37) % 11) / 8,            // 1.8s–3.1s
+    delay: -(((i * 53) % 17) / 6),                   // negative: already mid-motion on first paint
   };
 });
 
-// "Listening" indicator for the live call. Animates while the line is open; goes still when muted or on hold.
+// Subtle "listening" indicator for the live call. Drifts gently while the line is open; still when muted or on hold.
 export function ListeningWave({ muted = false, onHold = false }) {
   const active = !muted && !onHold;
-  const label = onHold ? "On hold" : muted ? "Muted" : "Listening for notes";
+  const label = onHold ? "On hold" : muted ? "Muted" : "Listening";
   return (
-    <div role="status" aria-live="polite" className="mt-4 pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
-      <div className="flex items-center justify-center gap-[3px]" style={{ height: 34, position: "relative" }}>
-        {active && (
-          <div
-            aria-hidden="true"
-            style={{ position: "absolute", inset: "4px 12%", borderRadius: 999, background: "linear-gradient(90deg, #FF5DA2, #FF9A4D, #36E2C8)", opacity: 0.18, filter: "blur(14px)", animation: "listenGlow 3.2s ease-in-out infinite" }}
-          />
-        )}
+    <div role="status" aria-live="polite" className="flex items-center gap-2 mb-3" style={{ height: 14 }}>
+      <div className="flex items-center gap-[2px]" style={{ height: 12 }} aria-hidden="true">
         {bars.map((b, i) => (
           <span
             key={i}
             className="listen-bar"
             style={{
-              position: "relative", width: 3, height: b.height, borderRadius: 3,
-              background: `linear-gradient(180deg, ${b.color}, #FF9A4D)`,
-              transformOrigin: "center", transform: active ? undefined : "scaleY(0.18)",
-              opacity: active ? 1 : 0.35, transition: "opacity 0.4s ease, transform 0.4s ease",
+              width: 2, height: b.height, borderRadius: 2, background: C.inkMuted,
+              transformOrigin: "center", transform: active ? undefined : "scaleY(0.4)",
+              opacity: active ? 0.45 : 0.2, transition: "opacity 0.4s ease, transform 0.4s ease",
               animation: active ? `listenWave ${b.duration}s ease-in-out ${b.delay}s infinite` : "none",
             }}
           />
         ))}
       </div>
-      <div style={{ ...sans, color: active ? C.inkMuted : C.inkFaint }} className="text-xs mt-2 flex items-center justify-center gap-1.5">
-        <span
-          aria-hidden="true"
-          style={{ width: 6, height: 6, borderRadius: "50%", background: active ? C.green : C.inkFaint, animation: active ? "softPulse 1.8s ease-in-out infinite" : "none" }}
-        />
-        {label}
-      </div>
+      <span style={{ ...sans, color: C.inkFaint }} className="text-[11px]">{label}</span>
     </div>
   );
 }
