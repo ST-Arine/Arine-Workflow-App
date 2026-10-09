@@ -8,6 +8,6 @@ export default [
     files: ["src/**/*.{js,jsx}"],
     plugins: { react },
     languageOptions: { globals: globals.browser, parserOptions: { ecmaFeatures: { jsx: true } } },
-    rules: { "react/jsx-uses-vars": "error", "react/jsx-uses-react": "off" },
+    rules: { "react/jsx-uses-vars": "error", "react/jsx-uses-react": "off", "react/jsx-no-undef": "error" },
   },
 ];
