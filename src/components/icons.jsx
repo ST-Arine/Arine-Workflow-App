@@ -35,3 +35,4 @@ export const Users = (p) => <Icon {...p} path={<><circle cx="9" cy="8" r="3.2"/>
 export const Plug = (p) => <Icon {...p} path={<><path d="M9 2v6M15 2v6M7 8h10l-1 6a4 4 0 0 1-4 4h0a4 4 0 0 1-4-4z"/><line x1="12" y1="18" x2="12" y2="22"/></>} />;
 export const Sliders = (p) => <Icon {...p} path={<><line x1="6" y1="4" x2="6" y2="20"/><circle cx="6" cy="9" r="1.6"/><line x1="12" y1="4" x2="12" y2="20"/><circle cx="12" cy="15" r="1.6"/><line x1="18" y1="4" x2="18" y2="20"/><circle cx="18" cy="7" r="1.6"/></>} />;
 export const Route = (p) => <Icon {...p} path={<><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></>} />;
+export const Copy = (p) => <Icon {...p} path={<><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></>} />;

@@ -3,6 +3,7 @@ import { C, serif, sans } from "../theme";
 import { Check, X, Phone, Pencil, Plus, AlertCircle, User } from "../components/icons";
 import { Badge, Panel, PrimaryButton, GhostButton, Avatar } from "../components/ui";
 import { PatientHeader, PatientPicker, groupByPatient } from "../components/patients";
+import { CopyButton } from "../components/CopyButton";
 
 // ---------- PREP ----------
 export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall }) {
@@ -40,6 +41,15 @@ export function PrepStep({ engagement, agenda, setAgenda, onBack, onStartCall })
               {engagement.dob && (<><span className="text-xs">DOB</span><span className="text-xs text-right" style={{ color: C.ink }}>{engagement.dob}</span></>)}
               {engagement.insurance && (<><span className="text-xs">Insurance</span><span className="text-xs text-right" style={{ color: C.ink }}>{engagement.insurance}</span></>)}
             </div>
+            {engagement.patientId && (
+              <div style={{ borderColor: C.border }} className="border-t mt-3 pt-3">
+                <div style={{ ...sans, color: C.inkMuted }} className="flex items-center justify-between mb-2">
+                  <span className="text-xs">Patient ID</span>
+                  <span className="text-xs font-mono" style={{ color: C.ink }} title={engagement.patientId}>{engagement.patientId.slice(0, 8)}…{engagement.patientId.slice(-4)}</span>
+                </div>
+                <CopyButton text={engagement.patientId} label="Copy patient ID" />
+              </div>
+            )}
           </Panel>
 
           {patients && (

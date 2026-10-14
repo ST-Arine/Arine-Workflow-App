@@ -5,7 +5,7 @@ export const ACCOUNTS = ["Mercy Health Network", "Riverside Health Partners", "S
 export const QUEUE = [
   {
     id: "e1", kind: "patient", name: "Maria Chen", priority: "High", reason: "Refill due in 2 days",
-    dob: "Apr 12, 1958", mrn: "MRN-88213", phone: "(555) 019-2231", insurance: "Meridian Health PPO",
+    dob: "Apr 12, 1958", mrn: "MRN-88213", patientId: "2445355b-f8c8-4d73-8e1d-99b19cb77ad8", phone: "(555) 019-2231", insurance: "Meridian Health PPO",
     allergies: "No known allergies",
     medications: [
       { name: "Metformin", dose: "500mg", freq: "Twice daily" },
@@ -41,7 +41,7 @@ export const QUEUE = [
   },
   {
     id: "e3", kind: "patient", name: "Omar Siddiqui", priority: "Medium", reason: "Flagged by provider note",
-    dob: "Nov 2, 1990", mrn: "MRN-55042", phone: "(555) 771-9034", insurance: "Coastal Direct",
+    dob: "Nov 2, 1990", mrn: "MRN-55042", patientId: "7c1e9a40-3b52-4f6d-a8d1-0e24b6f93c15", phone: "(555) 771-9034", insurance: "Coastal Direct",
     allergies: "Penicillin (rash)",
     medications: [{ name: "Amoxicillin", dose: "500mg", freq: "3x daily" }],
     history: ["New prescription started 6 days ago", "Provider note: watch for GI side effects"],
@@ -55,9 +55,9 @@ export const QUEUE = [
     id: "e4", kind: "provider", name: "Dr. Lee", practice: "Northside Family Clinic", priority: "High", reason: "3 patients to discuss with the provider",
     phone: "(555) 330-4182", insurance: null, allergies: null, medications: null,
     patients: [
-      { id: "p1", name: "Maria Chen", dob: "Apr 12, 1958", mrn: "MRN-88213" },
-      { id: "p2", name: "Omar Siddiqui", dob: "Nov 2, 1990", mrn: "MRN-55042" },
-      { id: "p3", name: "Helen Park", dob: "Jun 3, 1949", mrn: "MRN-67190" },
+      { id: "p1", name: "Maria Chen", dob: "Apr 12, 1958", mrn: "MRN-88213", patientId: "2445355b-f8c8-4d73-8e1d-99b19cb77ad8" },
+      { id: "p2", name: "Omar Siddiqui", dob: "Nov 2, 1990", mrn: "MRN-55042", patientId: "7c1e9a40-3b52-4f6d-a8d1-0e24b6f93c15" },
+      { id: "p3", name: "Helen Park", dob: "Jun 3, 1949", mrn: "MRN-67190", patientId: "b93d6e08-51a7-4c2f-9d3a-6f8e2a1c4d70" },
     ],
     history: ["Prefers fax for prescription changes", "Last call handled by Dana R., 9 days ago"],
     pastNotes: [{ date: "Sep 24", note: "Asked us to send questions grouped by patient." }],
