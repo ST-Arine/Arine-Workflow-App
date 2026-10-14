@@ -2,6 +2,7 @@ import { C, serif, sans } from "../theme";
 import { Circle, ChevronRight } from "../components/icons";
 import { Badge, Panel, PrimaryButton, GhostButton, Avatar, Section } from "../components/ui";
 import { PatientHeader, groupByPatient } from "../components/patients";
+import { CopyButton, shortId } from "../components/CopyButton";
 
 // ---------- FOUND ----------
 export function FoundScreen({ engagement, onPrep, onShowAnother }) {
@@ -22,6 +23,14 @@ export function FoundScreen({ engagement, onPrep, onShowAnother }) {
             {isProvider && <p style={{ ...sans, color: C.inkFaint }} className="text-xs mt-0.5">{engagement.practice}</p>}
           </div>
         </div>
+
+        {engagement.patientId && (
+          <div className="flex items-center flex-wrap gap-3 mb-4">
+            <span style={{ ...sans, color: C.inkMuted }} className="text-xs">Patient ID</span>
+            <span className="text-xs font-mono" style={{ color: C.ink }} title={engagement.patientId}>{shortId(engagement.patientId)}</span>
+            <CopyButton text={engagement.patientId} label="Copy patient ID" />
+          </div>
+        )}
 
         {isProvider ? (
           <Section label="Open questions by patient" first>

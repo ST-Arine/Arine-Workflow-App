@@ -3,6 +3,9 @@ import { C } from "../theme";
 import { Check, Copy } from "./icons";
 import { GhostButton } from "./ui";
 
+// Long IDs are shown shortened (full value goes in a title/tooltip and is what gets copied)
+export const shortId = (id) => `${id.slice(0, 8)}…${id.slice(-4)}`;
+
 async function writeToClipboard(text) {
   if (navigator.clipboard?.writeText) {
     try { await navigator.clipboard.writeText(text); return true; } catch { /* fall through to the legacy path */ }
